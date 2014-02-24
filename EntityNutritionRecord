@@ -1,0 +1,39 @@
+package com.example.fitness.analysis;
+
+import java.util.HashMap;
+
+public class EntityNutritionRecord {
+	public String date;
+	public double dailyTotalCal;
+	public double dailyTotalPrt;
+	public double dailyTotalCht;
+	HashMap<String,Double[]> dailyFoodDetail = new HashMap<String,Double[]>();
+	
+	
+	EntityNutritionRecord(String Date){
+		date = Date;
+	}
+	
+	public void putRecord(String name,double Cal,double Prt,double Cht){
+		Double[] tmp = {Cal,Prt,Cht}; 
+		dailyFoodDetail.put(name,tmp);
+	}
+
+	public void putTotal(double totalCal, double totalPrt, double totalCht) {
+		putCal(totalCal);
+		putPrt(totalPrt);
+		putCht(totalCht);
+	}
+
+	private void putCal(double totalCal) {
+		dailyTotalCal = totalCal;
+	}
+	
+	private void putPrt(double totalPrt) {
+		dailyTotalPrt = totalPrt;
+	}
+
+	private void putCht(double totalCht) {
+		dailyTotalCht = totalCht;
+	}
+}
