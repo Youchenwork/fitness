@@ -1,0 +1,12 @@
+package dbModel;
+
+public class Food {
+	public String FoodID;
+	public String FoodName;
+	public String Unit;
+	public String FoodCal;
+	public String Carbohydrate;
+	public String Protein;
+	public String Category;
+
+}
