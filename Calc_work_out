@@ -1,0 +1,222 @@
+package com.example.fitness;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import calculator.Calculator;
+import database.dbCreation;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.NumberPicker;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
+
+public class Calc_work_out extends Activity implements OnItemSelectedListener, OnClickListener{
+	//sample data used to populate spinners
+	 //Category and its content string need to be the same
+	 String[] ExerciseCategory = {"Select an exercise category", "Endurance","Strength","Ball","Other"};
+	 String[] Exercise = {"Select an exercise"};
+	// String[] Endurance = {"Select an exercise","Dancing","Swimming"};
+	 //String[] Strength = {"Select an exercise","Lifting weights","Using a resistance band"};
+	 String[] Type_Exercise;
+	 Spinner exercise_category_spn;
+	 Spinner exercises_spn;
+	 ArrayAdapter<String> exercises_adapter;
+	 ArrayAdapter<String> exercise_category_adapter;
+	 TextView wo_unit;
+	 Button add_exercise;
+	 Button view_result;
+	 Button menu_btn1;
+	 Button menu_btn2;
+	 //Button menu_btn3;
+	 NumberPicker wo_numberPicker;
+	 Toast addexercise_toast;
+	 Intent nextActivity;
+	 ShowDialog show_dialog;
+	 HashMap<String, Integer> work_out_hm = new HashMap<String, Integer>();
+     dbCreation.DbHelper db = new dbCreation.DbHelper(this);
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.calc_work_out);
+		
+		add_exercise = (Button) findViewById(R.id.add_exercise);
+		add_exercise.setOnClickListener(this);
+		view_result = (Button) findViewById(R.id.view_result);
+		view_result.setOnClickListener(this);
+		wo_unit = (TextView) findViewById(R.id.wo_unit);
+		wo_numberPicker = (NumberPicker) findViewById(R.id.wo_numberPicker);
+		wo_numberPicker.setMaxValue(10);
+		wo_numberPicker.setMinValue(0);
+		
+		menu_btn1 = (Button)findViewById(R.id.menu_btn1);
+		menu_btn2 = (Button)findViewById(R.id.menu_btn2);
+		//menu_btn3 = (Button)findViewById(R.id.menu_btn3);
+		menu_btn1.setOnClickListener(this);
+		menu_btn2.setOnClickListener(this);
+		//menu_btn3.setOnClickListener(this);
+		menu_btn1.setText("Personal Record");
+		//menu_btn3.setText("Health Chart");
+		menu_btn2.setText("Analysis");
+		
+		/******************* Database Test ********************************************/
+	/*	
+		
+		dbCreation.DbHelper db = new dbCreation.DbHelper(this);
+		List<dbModel.Activity> a = db.getAct("strength");
+		int numOfList = a.size();
+		String[] e = new String[numOfList];
+		for(int i = 0; i < numOfList; i++) {
+			e[i] = a.get(i).ActName;
+		}
+		this.Endurance = e;
+		
+		
+		*/
+		exercise_category_spn = (Spinner)findViewById(R.id.exercise_category_spn);
+		exercise_category_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, ExerciseCategory);
+		exercise_category_spn.setAdapter(exercise_category_adapter);
+		exercise_category_spn.setOnItemSelectedListener(this);
+		
+		
+
+		exercises_spn = (Spinner)findViewById(R.id.exercises_spn);
+		exercises_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, Exercise);
+		exercises_spn.setEnabled(false);
+		exercises_spn.setClickable(false);
+		exercises_spn.setAdapter(exercises_adapter);
+		exercises_spn.setOnItemSelectedListener(this);
+	}
+
+	@Override
+	//arg0 is adapterID, arg1 is viewID, arg2 is the position of selected item, arg3 is its ID
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		 switch(arg0.getId()){
+		 	case R.id.exercise_category_spn:
+		 		if(arg2 == 0)
+		 		{
+		 			exercises_spn.setEnabled(false);
+		 			exercises_spn.setClickable(false);
+		 			wo_numberPicker.setEnabled(false);
+		 			exercises_spn.setAdapter(exercises_adapter);
+		 		}
+		 		else
+		 		{
+		 			exercises_spn.setEnabled(true);
+		 			exercises_spn.setClickable(true);
+		 			/*
+		 			if(arg2 == 1)
+		 				exercises_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, Endurance);
+		 			if(arg2 == 2)
+		 				exercises_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, Strength);
+		 				*/
+		 			String Category = exercise_category_spn.getSelectedItem().toString();
+		 			System.out.println(Category);
+		 			List<dbModel.Activity> Type_exerciselist = db.getAct(Category);
+		 	
+		 			int Exercisenum = Type_exerciselist.size();
+		 			Type_Exercise = new String[Exercisenum+1];
+		 			
+		 			Type_Exercise[0] = "Select an Exercise";
+	        		for(int i =0; i<Exercisenum;i++)
+	        		{
+	        			Type_Exercise[i+1] = Type_exerciselist.get(i).ActName;
+	        		}
+	        		
+	        		exercises_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, Type_Exercise);
+		 			exercises_spn.setAdapter(exercises_adapter);
+		 		}
+		 		break;
+	        case R.id.exercises_spn:
+	        	//make a query to database, food_spn.getSelectedItem() gives you the exercise, 
+	        	//get the unit it uses to calculate calorie, such as mins, rounds, reps,
+	        	//and replace wo_unit_arr[arg2] with your query result, in the textview
+	        	if(arg2 != 0){
+	        	System.out.println(exercises_spn.getSelectedItem());
+	        	System.out.println(arg2);
+	        	wo_numberPicker.setEnabled(true);
+//	        	qty_input.setFocusableInTouchMode(true);
+	        //	String[] wo_unit_arr = {"Time","Mins","Rounds"};
+	        	//System.out.println(qty_unit_arr[arg2]);
+	    	//	wo_unit.setText(wo_unit_arr[arg2]);
+	        	wo_unit.setText("Hours");
+	        	}
+	        	if(arg2 == 0)
+	        	{
+	        		wo_numberPicker.setEnabled(false);
+	        		wo_unit.setText("");
+	        	}
+	    		break;	        	
+	    }
+		
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		switch(arg0.getId()){
+		case R.id.add_exercise:
+			if(wo_numberPicker.getValue() != 0)
+			{
+				work_out_hm.put(exercises_spn.getSelectedItem().toString(), wo_numberPicker.getValue());
+				String ActivityID = db.getActivityID(exercises_spn.getSelectedItem().toString());
+				db.ActHistoryInsert(ActivityID, String.valueOf(wo_numberPicker.getValue()));
+				
+				//check all data in the current hashmap
+//				for(Entry<String, Integer> entry: work_out_hm.entrySet()) {
+//			        System.out.println(entry.getKey());
+//			        System.out.println(entry.getValue());
+//			    }
+				Toast.makeText(getApplicationContext(), "Added "+exercises_spn.getSelectedItem().toString()+" to exercise", Toast.LENGTH_SHORT).show();
+			}
+			else
+				Toast.makeText(getApplicationContext(), "Please fill out all fields.", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.view_result:
+			if(work_out_hm.isEmpty())
+				Toast.makeText(getApplicationContext(), "Sorry, you haven't entered any data yet.", Toast.LENGTH_SHORT).show();
+			else
+			{
+				//Retrieve information from hashmap and calculate calorie, pass result to show_dialog(result),
+				//depending on how the report looks like
+				Calculator calculator = new Calculator(this);
+				int consume_Cal = calculator.activity_Calc(work_out_hm);
+				String result = "Great, you burnt "+Integer.toString(consume_Cal)+" Calories today";
+				show_dialog = new ShowDialog();
+				show_dialog.show_dialog(this,result,"Burn Calorie");
+			}
+			break;
+		case R.id.menu_btn1:
+        	nextActivity = new Intent(Calc_work_out.this, PersonalRecord_CalendarView.class);
+        	startActivity(nextActivity);
+            break;
+        case R.id.menu_btn2:
+        	nextActivity = new Intent(Calc_work_out.this, AnalTab.class);
+        	startActivity(nextActivity); 
+            break;
+//        case R.id.menu_btn3:
+//        	nextActivity = new Intent(Calc_work_out.this, Health Chart.class);
+//        	startActivity(nextActivity);
+//          break; 
+        default:
+            break;
+		}
+		
+	}
+
+}
