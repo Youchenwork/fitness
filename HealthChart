@@ -1,0 +1,61 @@
+package com.example.fitness;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class HealthChart extends Activity implements OnClickListener{
+	TextView health_chart_text;
+	TextView hc_graph;
+	Button menu_btn1;
+    Button menu_btn2;
+	//Button menu_btn3;
+	Intent nextActivity;
+	
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	        setContentView(R.layout.health_chart);
+	        
+			menu_btn1 = (Button)findViewById(R.id.menu_btn1);
+			menu_btn2 = (Button)findViewById(R.id.menu_btn2);
+			//menu_btn3 = (Button)findViewById(R.id.menu_btn3);
+			menu_btn1.setOnClickListener(this);
+			menu_btn2.setOnClickListener(this);
+			//menu_btn3.setOnClickListener(this);
+			menu_btn1.setText("Calorie Calculator");
+			menu_btn2.setText("Personal Record");
+			//menu_btn3.setText("Analysis");
+	        
+	        hc_graph = (TextView)findViewById(R.id.hc_graph);
+	        hc_graph.setText(this.getIntent().getExtras().getString("Report Type")+"  "
+	        +this.getIntent().getExtras().getString("Period"));
+	        health_chart_text = (TextView)findViewById(R.id.health_chart_text);
+	        
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+        case R.id.menu_btn1:
+        	nextActivity = new Intent(HealthChart.this, CalcTab.class);
+        	startActivity(nextActivity);
+            break;
+        case R.id.menu_btn2:
+        	nextActivity = new Intent(HealthChart.this, PersonalRecord_CalendarView.class);
+        	startActivity(nextActivity); 
+            break;
+//        case R.id.menu_btn3:
+//        	nextActivity = new Intent(HealthChart.this, AnalTab.class);
+//        	startActivity(nextActivity);
+//            break; 
+        default:
+            break;
+        }
+		
+	}
+
+}
