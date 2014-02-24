@@ -1,0 +1,43 @@
+package com.example.fitness;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Toast;
+import android.app.Activity;
+import android.view.View;
+import android.app.Dialog;
+
+public class InDialog implements  OnClickListener{
+
+	private Activity db;
+	private String weight;
+	Dialog dialog;
+	
+	public InDialog(Activity d, String w, Dialog dia) {
+		// TODO Auto-generated constructor stub
+		db = d;
+		weight = w;
+		dialog = dia;
+	}
+	
+	@Override
+	public void onClick(View v) {
+		if(weight.trim().length() != 0)
+		{
+			//save "weight" and "cur_date" to database
+			dialog.dismiss();
+			//SimpleDateFormat df = new SimpleDateFormat("mm/dd/yyyy");
+			//String cur_date = df.format(Calendar.getInstance().getTime());
+			
+			//System.out.println(weight+"  "+cur_date);
+			//ShowDialog.db.updateUserWeight(weight.trim());
+		}
+		//else
+			//Toast.makeText(cur_context, "Please enter your weight.", Toast.LENGTH_SHORT).show();
+	}
+	
+
+}
