@@ -1,0 +1,28 @@
+package calculator;
+
+public class TimeProcess {
+
+	public TimeProcess() {
+		// TODO Auto-generated constructor stub
+	}
+
+	
+	public String timeInsert(String time)
+	{
+		if(time.length()==1)
+			time = "0"+time;
+		return time;
+	}
+	
+	public String timeTakeout(String time)
+	{
+		if(time.substring(0,1)=="0")
+		{
+			time = time.substring(1, 2);
+		}
+		
+		return time;
+		
+	}
+	
+}
