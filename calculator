@@ -1,0 +1,78 @@
+package calculator;
+import android.content.Context;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import database.dbCreation;
+import database.dbCreation.DbHelper;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+
+import android.content.DialogInterface;
+import android.content.Intent;
+
+public class Calculator{
+	private Context context; 
+	public Calculator(Context c) {
+		// TODO Auto-generated constructor stub
+		this.context = c;
+	}
+	
+	public double foodIntake_Calc(HashMap<String, Double> foods)
+	{
+		double calorie_intake=0;
+		
+	   Iterator iterator = foods.entrySet().iterator();
+		dbCreation.DbHelper db_calc_in = new dbCreation.DbHelper(this.context);
+
+		
+		while(iterator.hasNext()) {
+		
+			Map.Entry me = (Map.Entry)iterator.next();    
+			String foodName = me.getKey().toString() ;  
+			System.out.println("foodname = "+foodName);
+			double foodQuantity = Double.parseDouble(me.getValue().toString());
+			System.out.println("foodQuantity = "+me.getValue().toString());
+			
+			double unitCalorie = Double.parseDouble(db_calc_in.getFoodCal_name(foodName));
+			System.out.println("unitCalorie = "+db_calc_in.getFoodCal_name(foodName));
+			double sum_Calorie = foodQuantity*unitCalorie;
+			System.out.println("sum_Calorie ="+ Double.toString(sum_Calorie));
+			calorie_intake += sum_Calorie;
+			//calorie_intake+=1;
+		}
+		
+		return calorie_intake;
+	}
+	
+	
+	
+	
+	public int activity_Calc(HashMap<String,Integer> activity)
+	{
+		int calorie_activity =0;
+		
+		Iterator iterator = activity.entrySet().iterator();
+		dbCreation.DbHelper db_calc_out = new dbCreation.DbHelper(this.context);
+		while(iterator.hasNext()) {
+			
+			Map.Entry me = (Map.Entry)iterator.next();    
+			String activityName = me.getKey().toString() ;  
+			System.out.println("activity = "+activityName);
+			int activityQuantity = Integer.parseInt(me.getValue().toString());
+			System.out.println("activityQuantity = "+me.getValue().toString());
+			
+			int unitCalorie = Integer.parseInt(db_calc_out.getActivityCal_name(activityName));
+			System.out.println("unitCalorie = "+db_calc_out.getActivityCal_name(activityName));
+			int sum_Calorie = activityQuantity*unitCalorie;
+			System.out.println("sum_Calorie ="+ Integer.toString(sum_Calorie));
+			calorie_activity += sum_Calorie;
+			//calorie_intake+=1;
+		}
+		return calorie_activity;
+	}
+
+}
