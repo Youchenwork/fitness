@@ -1,0 +1,133 @@
+package com.example.fitness;
+
+import java.util.ArrayList;
+
+import android.app.Activity;
+import android.app.ListActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import recomm.*;
+
+public class FitnessPlan extends ListActivity implements OnClickListener{
+	TextView fitness_plan_text;
+	TextView fp_text;
+	EditText calorie_input;
+	EditText exercisetime_input;
+	EditText plannum_input;
+	Button menu_btn1;
+    Button menu_btn2;
+	//Button menu_btn3;
+    Button plan_sbm;
+    CheckBox diverse_checkBox;
+	Intent nextActivity;
+	ListView plan_list;
+	ArrayList<String> plan_arraylist;
+	ArrayAdapter<String> plan_adapter;
+    String dummy = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. " +
+    		"Lorem Ipsum has been the industry's standard dummy text ever since the 1500s";
+    Recommender rec;
+
+	
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	        setContentView(R.layout.fitness_plan);
+	        
+			menu_btn1 = (Button)findViewById(R.id.menu_btn1);
+			menu_btn2 = (Button)findViewById(R.id.menu_btn2);
+			//menu_btn3 = (Button)findViewById(R.id.menu_btn3);
+			menu_btn1.setOnClickListener(this);
+			menu_btn2.setOnClickListener(this);
+			//menu_btn3.setOnClickListener(this);
+			menu_btn1.setText("Calorie Calculator");
+			menu_btn2.setText("Personal Record");
+			//menu_btn3.setText("Health Chart");
+			plan_sbm = (Button)findViewById(R.id.plan_sbm);
+			plan_sbm.setOnClickListener(this);
+			
+			calorie_input = (EditText)findViewById(R.id.calorie_input);
+			exercisetime_input = (EditText)findViewById(R.id.exercisetime_input);
+			plannum_input = (EditText)findViewById(R.id.plannum_input);
+			
+			//this is an error
+//			plan_arraylist = rec.recommend(); //populate plan_arraylist with your plans
+			/*plan_arraylist.add(dummy);
+			plan_arraylist.add(dummy);
+			plan_arraylist.add(dummy);*/
+			
+	        fp_text = (TextView)findViewById(R.id.fp_text);
+	        fitness_plan_text = (TextView)findViewById(R.id.fitness_plan_text);
+	        plan_adapter = new ArrayAdapter<String>(this, R.layout.list_item, plan_arraylist);
+	        plan_list = getListView();
+	        
+	        diverse_checkBox = (CheckBox) findViewById(R.id.diverse_checkBox);
+
+	        
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+        case R.id.menu_btn1:
+        	nextActivity = new Intent(FitnessPlan.this, CalcTab.class);
+        	startActivity(nextActivity);
+            break;
+        case R.id.menu_btn2:
+        	nextActivity = new Intent(FitnessPlan.this, PersonalRecord_CalendarView.class);
+        	startActivity(nextActivity); 
+            break;
+//        case R.id.menu_btn3:
+//        	nextActivity = new Intent(FitnessPlan.this, AnalysisReportActivity.class);
+//        	startActivity(nextActivity);
+//            break;
+        case R.id.plan_sbm:
+        	if(calorie_input.getText().toString().trim().length() != 0 && exercisetime_input.getText().toString().trim().length() != 0 && plannum_input.getText().toString().trim().length() != 0)
+        	{
+        		Integer int_calorie_input = Integer.parseInt(calorie_input.getText().toString());
+        		Integer int_exercisetime_input = Integer.parseInt(exercisetime_input.getText().toString());
+        		Integer int_plannum_input = Integer.parseInt(plannum_input.getText().toString());
+        		//here're the result you need, calorie, time, plan# and preference on diverse plan.
+        		System.out.println("cal: "+int_calorie_input+" time: "+int_exercisetime_input+" plan#: "+int_plannum_input);
+        		
+        		//initialize recommender (rec)
+        		rec = new Recommender(int_calorie_input, int_exercisetime_input, this);
+        		
+        		System.out.println(diverse_checkBox.isChecked());
+        		
+        		//if diverse is checked, wrap rec within a RecommenderWithDiversity decorator
+        		if (diverse_checkBox.isChecked())
+        		{
+        			rec = new RecommenderWithDiversity(rec);
+        		}
+        		
+        		//if plan num is set, wrap rec within a RecommenderWithItemLimit
+        		if (plannum_input.getText().toString().length() > 0)
+        		{
+        			rec = new RecommenderWithItemLimit(rec, int_plannum_input);
+        		}
+        		
+        		System.out.println("entered");
+        		plan_arraylist = rec.recommend();
+        		
+        		plan_adapter = new ArrayAdapter<String>(this, R.layout.list_item, plan_arraylist);
+        		plan_list.setAdapter(plan_adapter);
+        	}
+        	else
+        		Toast.makeText(getApplicationContext(), "Please fill out all fields.", Toast.LENGTH_SHORT).show();
+            break;
+        default:
+            break;
+        }
+		
+	}
+
+}
