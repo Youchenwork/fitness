@@ -1,0 +1,80 @@
+package recomm;
+
+import java.util.ArrayList;
+import android.content.Context;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.Collections;
+
+public class RecommenderWithDiversity extends RecommenderDecorator
+{
+	public RecommenderWithDiversity(Recommender rec)
+	{
+		super(rec);
+	}
+	
+	@Override
+	public ArrayList<String> recommend()
+	{
+		decoratee.recommend();
+
+		Collections.sort(decoratee.recommended, new DiversityComparator());
+		
+		ArrayList<String> result = new ArrayList<String>();
+		
+		for(int i = 0; i < decoratee.recommended.size(); i ++)
+		{
+			StringBuffer buff = new StringBuffer();
+			for (String s : decoratee.recommended.get(i).keySet())
+			{
+				buff.append(s + " ");
+				buff.append(decoratee.recommended.get(i).get(s));
+				buff.append(" ");
+			}
+			
+			/*String s = buff.toString().trim();
+			if (result.indexOf(s) != -1)
+			{
+				result.add(buff.toString().trim());
+			}*/
+			
+			result.add(buff.toString().trim());
+		}
+		
+		if (result.size() == 0)
+			result.add("no proper plan can be found");
+		
+		return result;
+	}
+}
+
+/*class DiversityComparator implements Comparator<String>
+{
+	@Override
+	public int compare(String s1, String s2)
+	{
+		int count1 = 0;
+		for (int i = 0; i < s1.length(); i ++)
+		{
+			if (s1.charAt(i) == ' ')
+				count1 ++;
+		}
+		
+		int count2 = 0;
+		for (int i = 0; i < s2.length(); i ++)
+		{
+			if (s2.charAt(i) == ' ')
+				count2 ++;
+		}
+		return count2 - count1;
+	}
+}*/
+
+class DiversityComparator implements Comparator<Hashtable<String, Integer>>
+{
+	@Override
+	public int compare(Hashtable<String, Integer> t1, Hashtable<String, Integer> t2)
+	{
+		return t2.keySet().size() - t1.keySet().size();
+	}
+}
