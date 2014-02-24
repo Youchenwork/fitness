@@ -1,0 +1,68 @@
+package com.example.fitness.analysis;
+
+import org.achartengine.ChartFactory;
+import org.achartengine.model.CategorySeries;
+import org.achartengine.renderer.DefaultRenderer;
+import org.achartengine.renderer.SimpleSeriesRenderer;
+
+import android.content.Context;
+import android.content.Intent;
+
+public class PieChartBuilder extends ChartBuilder {
+	/** The main series that will include all the data. */
+	private CategorySeries mSeries;
+	/** The main renderer for the main dataset. */
+	private DefaultRenderer mRenderer = new DefaultRenderer();
+	
+	/**
+	* Builds a category renderer to use the provided colors.
+	* 
+	* @param colors the colors
+	* @return the category renderer
+	*/
+	protected DefaultRenderer buildCategoryRenderer(int[] colors) {
+		DefaultRenderer renderer = new DefaultRenderer();
+		renderer.setLabelsTextSize(15);
+		renderer.setLegendTextSize(15);
+		renderer.setMargins(new int[] { 20, 30, 15, 0 });
+		for (int color : colors) {
+			SimpleSeriesRenderer r = new SimpleSeriesRenderer();
+			r.setColor(color);
+			renderer.addSeriesRenderer(r);
+		}
+		return renderer;
+	}
+
+	/**
+	* Builds a category series using the provided values.
+	* 
+	* @param titles the series titles
+	* @param values the values
+	* @return the category series
+	*/
+	protected void buildCategoryDataset(String title, String[] series, double[] values) {
+		this.mSeries = new CategorySeries(title);
+		for(int i = 0; i < series.length; i++) {
+			mSeries.add(series[i], values[i]);
+		}
+	}
+
+	@Override
+	public Intent getChartIntent(Context context, String[] series, double[] values) {
+	    getColors(values.length);
+	    mRenderer = buildCategoryRenderer(this.COLORS);
+	    mRenderer.setZoomButtonsVisible(false);
+	    mRenderer.setZoomEnabled(false);
+	    mRenderer.setChartTitleTextSize(20);
+	    mRenderer.setDisplayValues(true);
+	    mRenderer.setShowLabels(true);
+	    mRenderer.getSeriesRendererAt(0).setHighlighted(true);
+	    buildCategoryDataset("Food Categories", series, values);
+//	    r.setGradientEnabled(true);
+//	    r.setGradientStart(0, Color.BLUE);
+//	    r.setGradientStop(0, Color.GREEN);
+//	    r.setHighlighted(true);
+	    Intent intent = ChartFactory.getPieChartIntent(context, this.mSeries, mRenderer, "Propotion of Food Category");
+	    return intent;
+	}
+}
