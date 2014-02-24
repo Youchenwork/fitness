@@ -1,0 +1,1153 @@
+package database;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import calculator.TimeProcess;
+import database.dbContract.Foods;
+import database.dbContract.*;
+import dbModel.Activity;
+import dbModel.Food;
+import dbModel.User;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+
+public class dbCreation {	
+	private Context context=null;
+	
+	private static final String SQL_CREATE_ACTIVITY_ENTRIES="CREATE TABLE " +
+			Activities.TABLE_NAME+"(" + 
+			Activities.COLUMN_NAME_ACTIVITY_ID+ " VARCHAR(5) PRIMARY KEY," +
+			Activities.COLUMN_NAME_ACTIVITY_NAME+ " VARCHAR(100),"+
+			Activities.COLUMN_NAME_UNIT_CAL+ " VARCHAR(5),"+
+		   Activities.COLUMN_NAME_ACTIVITY_TYPE+ " VARCHAR(20)"+
+			")";
+	
+    private static final String SQL_DELETE_ACTIVITY_ENTRIES="DROP TABLE IF EXISTS " + Activities.TABLE_NAME;
+    
+    private static final String SQL_CREATE_FOOD_ENTRIES="CREATE TABLE " +
+    		Foods.TABLE_NAME+"(" + 
+    		Foods.COLUMN_NAME_FOOD_ID+ " VARCHAR(5) PRIMARY KEY," +
+    		Foods.COLUMN_NAME_FOOD_NAME+ " VARCHAR(100) ,"+
+    		Foods.COLUMN_NAME_UNIT+" VARCHAR(7) ,"+
+    		Foods.COLUMN_NAME_UNIT_CAL+" VARCHAR(5) ,"+
+    		Foods.COLUMN_NAME_CARBOHYDRATE+" VARCHAR(5) ,"+
+    		Foods.COLUMN_NAME_PROTEIN+" VARCHAR(5) ,"+
+    		Foods.COLUMN_NAME_CATEGORY+ " VARCHAR(100) "+")";
+    
+    private static final String SQL_DELETE_FOOD_ENTRIES="DROP TABLE IF EXISTS " + Foods.TABLE_NAME;
+    
+    private static final String SQL_CREATE_USER_ENTRIES="CREATE TABLE " +
+    		UserInfo.TABLE_NAME+"(" + 
+    		UserInfo.COLUMN_NAME_USER_ID+ " VARCHAR(5) PRIMARY KEY," +
+    		UserInfo.COLUMN_NAME_USER_NAME+ " VARCHAR(5),"+
+    		UserInfo.COLUMN_NAME_EMAIL+ " VARCHAR(50),"+
+    		UserInfo.COLUMN_NAME_BIRTH+ " VARCHAR(30),"+
+    		UserInfo.COLUMN_NAME_SEX+ " VARCHAR(6),"+
+    		UserInfo.COLUMN_NAME_HEIGHT+ " VARCHAR(10),"+
+    		UserInfo.COLUMN_NAME_WEIGHT+" VARCHAR(10),"+
+    		UserInfo.COLUMN_NAME_FITNESS_CHOICE+ " VARCHAR(10)"+")";
+    private static final String SQL_DELETE_USER_ENTRIES="DROP TABLE IF EXISTS " + UserInfo.TABLE_NAME;
+    
+    private static final String SQL_CREATE_FOOD_HISTORY_ENTRIES="CREATE TABLE " +
+            FoodHistory.TABLE_NAME+"(" + 
+            FoodHistory.COLUMN_NAME_FOOD_HISTORY_ID+ " VARCHAR(25) PRIMARY KEY," +
+    		FoodHistory.COLUMN_NAME_DATE+" VARCHAR(25)," +
+    		FoodHistory.COLUMN_NAME_TIME+ " VARCHAR(25),"+
+    		FoodHistory.COLUMN_NAME_FOOD+ " VARCHAR(5) ,"+
+    		FoodHistory.COLUMN_NAME_COSUME_QUANTITY+ " VARCHAR(5) ,"+
+    		FoodHistory.COLUM_NAME_MEALCATEGORY+ " VARCHAR(10)"+")";
+    private static final String SQL_DELETE_FOOD_HISTORY_ENTRIES="DROP TABLE IF EXISTS " +FoodHistory.TABLE_NAME;
+    
+    private static final String SQL_CREATE_ACT_HISTORY_ENTRIES="CREATE TABLE " +
+            ActHistory.TABLE_NAME+"(" + 
+            ActHistory.COLUMN_NAME_ACT_HISTORY_ID+ " VARCHAR(25) PRIMARY KEY," +
+    		ActHistory.COLUMN_NAME_DATE+ " VARCHAR(25)," +
+    		ActHistory.COLUMN_NAME_TIME+ " VARCHAR(25),"+
+    		ActHistory.COLUMN_NAME_ACT+ " VARCHAR(5),"+
+    		ActHistory.COLUMN_NAME_COSUME_QUANTITY+ " VARCHAR(5)"+")";
+    private static final String SQL_DELETE_ACT_HISTORY_ENTRIES="DROP TABLE IF EXISTS " +ActHistory.TABLE_NAME;
+    
+    private static final String SQL_CREATE_USER_TYPE_ENTRIES="CREATE TABLE "+
+            UserType.TABLE_NAME+"("+
+    		UserType.COLUMN_NAME_TYPE+" VARCHAR(10) PRIMARY KEY,"+
+    		UserType.COLUMN_NAME_SEX+" VARCHAR(5),"+
+    		UserType.COLUMN_NAME_AGETOP+" VARCHAR(5),"+
+    		UserType.COLUMN_NAME_AGEBOTTOM+" VARCHAR(5),"+
+            UserType.COLUMN_NAME_CALFACTOR+" VARCHAR(5),"+
+            UserType.COLUMN_NAME_CALCONSTANT+" VARCHAR(5),"+
+    		UserType.COLUMN_NAME_CH+" VARCHAR(5),"+
+            UserType.COLUMN_NAME_PROTEIN+" VARCHAR(5)"+")";
+    private static final String SQL_DELETE_USER_TYPE_ENTRIES="DROP TABLE IF EXISTS " +UserType.TABLE_NAME;
+    
+    public static class DbHelper extends SQLiteOpenHelper{
+    	public static final int DATABASE_VERSION=1;
+    	public static final String DATABASE_NAME="Fitness.db";
+    	
+    	public DbHelper(Context context){
+    		super(context,DATABASE_NAME,null,DATABASE_VERSION);
+    	}
+		public void onCreate(SQLiteDatabase db) {
+			db.execSQL(SQL_CREATE_ACTIVITY_ENTRIES);
+			db.execSQL(SQL_CREATE_FOOD_ENTRIES);
+			db.execSQL(SQL_CREATE_USER_ENTRIES);
+			db.execSQL(SQL_CREATE_FOOD_HISTORY_ENTRIES);
+			db.execSQL(SQL_CREATE_ACT_HISTORY_ENTRIES);
+			db.execSQL(SQL_CREATE_USER_TYPE_ENTRIES);
+			
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('1', 'Aerobics, slide training (basic)', '360','Endurance')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('2', 'Backpacking with 10 lb. load', '432','Endurance')");
+     		db.execSQL("insert into "+Activities.TABLE_NAME+" values('3', 'Backpacking with 20 lb. load', '480','Endurance')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('4', 'Backpacking with 30 lb. load', '564')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('5', 'Badminton', '360','Ball')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('6', 'Basketball (game)', '528')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('7', 'Basketball (leisurely, nongame)', '312')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('8', 'Bicycling, 10 mph (6 minutes/mile)', '300','Ball')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('9', 'Bicycling, 13 mph (4.6 minutes/mile)', '480')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('10', 'Billiards', '108')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('11', 'Bowling', '132','Ball')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('12', 'Canoeing, 2.5 mph', '168')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('13', 'Canoeing, 4.0 mph', '324','Endurance')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('14', 'Croquet', '144')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('15', 'Cross country snow skiing, intense', '792')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('16', 'Cross country snow skiing, leisurely', '372','Ball')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('17', 'Dancing (noncontact)', '240')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('18', 'Dancing (slow)', '132','Other')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('19', 'Gardening, moderate', '216')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('20', 'Golfing (walking, w/o cart)', '240')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('21', 'Golfing (with a cart)', '168','Ball')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('22', 'Handball', '552','ball')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('23', 'Hiking with a 10 lb. load', '432')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('24', 'Hiking with a 20 lb. load', '480','Endurance')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('25', 'Hiking with a 30 lb. load', '564')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('26', 'Hiking, no load', '372')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('27', 'Housework', '216','other')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('28', 'Ironing', '120')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('29', 'Jogging, 5 mph (12 minutes/mile)', '444','Endurance')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('30', 'Jogging, 6 mph (10 minutes/mile)', '552')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('31', 'Mopping', '204','Other')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('32', 'Mowing', '324','Other')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('33', 'Ping Pong', '216','Ball')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('34', 'Raking', '180')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('35', 'Raquetball', '492')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('36', 'Rowing (leisurely)', '180','Endurance')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('37', 'Rowing machine', '432')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('38', 'Running, 08 mph (7.5 minutes/mile)', '732','Endurance')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('39', 'Running, 09 mph (6.7 minutes/mile)', '792')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('40', 'Running, 10 mph (6 minutes/mile)', '840')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('41', 'Scrubbing the floor', '336')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('42', 'Scuba diving', '456')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('43', 'Shopping for groceries', '144','Endurance')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('44', 'Skipping rope', '684','Other')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('45', 'Snow shoveling', '468','Other')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('46', 'Snow skiing, downhill', '312')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('47', 'Soccer', '468')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('48', 'Squash', '492')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('49', 'Stair climber machine', '384')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('50', 'Stair climbing', '336')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('51', 'Swimming (25 yards/minute)', '288')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('52', 'Swimming (50 yards/minute)', '540')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('53', 'Table Tennis', '216')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('54', 'Tennis', '384')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('55', 'Tennis (doubles)', '264')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('56', 'Trimming hedges', '252')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('57', 'Vacuuming', '180')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('58', 'Volleyball (game)', '288')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('59', 'Volleyball (leisurely)', '168')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('60', 'Walking, 2 mph (30 minutes/mile)', '144')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('61', 'Walking, 3 mph (20 minutes/mile)', '192')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('62', 'Walking, 4 mph (15 minutes/mile)', '240')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('63', 'Washing the car', '180')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('64', 'Waterskiing', '384')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('65', 'Waxing the car', '240')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('66', 'Weeding', '240')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('67', 'Weight training (40 sec. between sets)', '612','Strength')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('68', 'Weight training (60 sec. between sets)', '456','Strength')");
+			db.execSQL("insert into "+Activities.TABLE_NAME+" values('69', 'Weight training (90 sec. between sets)', '300','Strength')");
+//			db.execSQL("insert into "+Activities.TABLE_NAME+" values('70', 'Window cleaning', '180')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('822', 'SPINACH SOUFFLE', 'CUP', '220', '8', '3','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('824', 'SPINACH, CANNED, DRND,W/O SALT', 'CUP', '7', '50', '6','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('826', 'SPINACH, COOKED FROM RAW, DRND', 'CUP', '40', '0', '7','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('828', 'SQUASH, SUMMER, COOKED, DRAIND', 'CUP', '8', '35', '2','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('830', 'STRAWBERRIES, FROZEN, SWEETEND', 'CUP', '245', '0', '66','FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('832', 'STRAWBERRIES, RAW', 'CUP', '0', '45', '49','FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('834', 'SUGAR FROSTED FLAKES, KELLOGG ', 'OZ', '0', '26', '35','SUGAR')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('836', 'SUGAR, BROWN, PRESSED DOWN', 'CUP', '820', '0', '22','SUGAR')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('838', 'SUGAR, WHITE, GRANULATED', 'CUP', '770', '0', '99','SUGAR')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('842', 'SUNFLOWER OIL', 'TBSP', '25', '4', '0','OIL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('844', 'SUPER SUGAR CRISP CEREAL', 'OZ', '5', '0', '26','CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('846', 'SWEETENED CONDENSED MILK CNND ', 'CUP', '980', '27', '66','MILK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('848', 'SWEETPOTATOES, BOILED W/O PEEL', 'POTATO', '60', '0', '37','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('850', 'SWEETPOTATOES, CANNED, MASHED ', 'CUP', '59', '260', '5','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('852', 'SWISS CHEESE', 'OZ', '5', '8', '26','CHEESE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('854', 'SYRUP, CHOCOLATE FLVRED, FUDGE', 'TBSP', '7', '5', '1', 'SAUCE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('856', 'TACO', 'TACO', '5', '9', '2','TACO')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('858', 'TANGERINE JUICE, CANNED,SWTNED', 'CUP', '25', '0', '3','JUICE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('860', 'TANGERINES, RAW', 'TANGRN', '35', '0', '9','FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('862', 'TEA, BREWED', 'FL', '0', '24', '9','TEA')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('864', 'TEA,INSTANT,PREPARD,SWEETENED ', 'FL', '0', '0', '22','TEA')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('866', 'TOFU', 'PIECE', '85', '5', '3','TOFU')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('868', 'TOMATO JUICE, CANNED W/O SALT ', 'CUP', '40', '0', '2','JUICE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('872', 'TOMATO PUREE, CANNED W/O SALT ', 'CUP', '5', '0', '25','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('874', 'TOMATO SOUP WITH MILK, CANNED ', 'CUP', '60', '6', '22','SOUPS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('876', 'TOMATO VEG SOUP, DEHYD,PREPRED', 'PKT', '8', '40', '0','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('878', 'TOMATOES, CANNED, S+L,W/O SALT', 'CUP', '0', '5', '2','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('882', 'TRIX CEREAL', 'OZ', '0', '25', '2','CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('884', 'TUNA SALAD', 'CUP', '375', '9', '33','SALAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('886', 'TUNA, CANND, DRND,WATR, WHITE ', 'OZ', '5', '1', '0','SEAFOODS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('888', 'TURKEY LOAF, BREAST MEAT W/O C', 'SLICES', '22', '1', '0','TURKEY')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('890', 'TURKEY PATTIES, BRD,BATTD,FRID', 'PATTY', '80', '2', '0','TURKEY')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('892', 'TURKEY, ROASTED, DARK MEAT', 'PIECES', '40', '6', '0','TURKEY')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('894', 'TURKEY, ROASTED, LIGHT + DARK ', 'CUP', '240', '7', '0','TURKEY')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('896', 'TURNIP GREENS, CKED FRM FROZEN', 'CUP', '8', '50', '5','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('898', 'TURNIPS, COOKED, DICED', 'CUP', '30', '0', '8','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('900', 'VEAL CUTLET, MED FAT,BRSD,BRLD', 'OZ', '61', '9', '0','BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('902', 'VEGETABLE BEEF SOUP, CANNED', 'CUP', '80', '2', '0','SOUPS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('904', 'VEGETABLES, MIXED, CANNED', 'CUP', '75', '0', '5','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('906', 'VEGETARIAN SOUP, CANNED', 'CUP', '70', '2', '0','SOUPS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('908', 'VIENNA SAUSAGE', 'SAUSAG', '45', '4', '0','SAUSAGE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('910', 'VINEGAR, CIDER', 'TBSP', '0', '5', '0','')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('912', 'WAFFLES, FROM MIX', 'WAFFLE', '205', '8', '27','WAFFLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('914', 'WALNUTS, BLACK, CHOPPED', 'OZ', '70', '6', '3','NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('916', 'WALNUTS, ENGLISH, PIECES', 'OZ', '80', '8', '5','NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('918', 'WATERMELON, RAW', 'PIECE', '55', '2', '35','FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('920', 'WHEAT BREAD', 'LOAF', '60', '9', '23','BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('922', 'WHEAT BREAD, TOASTED', 'SLICE', '2', '65', '3','BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('924', 'WHEAT FLOUR, ALL-PURPOSE,UNSIF', 'CUP', '95', '455', '3','WHEAT')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('926', 'WHEAT, THIN CRACKERS', 'CRACKR', '8', '1', '5','WHEAT')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('928', 'WHIPPED TOPPING, PRESSURIZED', 'TBSP', '0', '2', '3','CREAM')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('930', 'WHIPPING CREAM, UNWHIPED,HEAVY', 'TBSP', '50', '6', '0','CREAM')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('932', 'WHIPPING CREAM, UNWHIPED,LIGHT', 'TBSP', '45', '5', '0','CREAM')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('934', 'WHITE BREAD CRUMBS, SOFT', 'CUP', '20', '2', '4','BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('936', 'WHITE BREAD, SLICE 18 PER LOAF', 'PER', '3', '1', '2','BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('938', 'WHITE BREAD, TOASTED 18 PER', 'PER', '3', '1', '2','BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('940', 'WHITE CAKE W/ WHT FRSTNG,COMML', 'CAKE', '470', '48', '670','CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('942', 'WHITE SAUCE W/ MILK FROM MIX', 'CUP', '240', '3', '2','SAUCE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('944', 'WHOLE-WHEAT BREAD', 'LOAF', '0', '2', '6','BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('946', 'WHOLE-WHEAT BREAD, TOASTED', 'SLICE', '3', '70', '0','BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('948', 'WHOLE-WHEAT WAFERS, CRACKERS', 'CRACKR', '2', '3', '1','CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('950', 'WINE, TABLE, RED', 'F', '1', '0', '3','WINE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('952', 'YEAST, BAKERS, DRY, ACTIVE', 'PKG', '20', '0', '3','BAKING INGREDIENTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('954', 'YELLOW CAKE W/ CHOC FRST,FRMIX', 'CAKE', '3735', '25', '638','CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('956', 'YELLOWCAKE W/ CHOCFRSTNG,COMML', 'CAKE', '3895', '75', '620','CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('958', 'YOGURT, W/ LOFAT MILK, PLAIN', 'OZ', '18', '4', '16', 'YOGURT')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('960', 'YOGURT, W/ NONFAT MILK', 'OZ', '15', '0', '17', 'YOGURT')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('1', '1000 ISLAND, SALAD DRSNG,LOCAL', 'ISLAND;', '0', '1', '2','SALAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('2', '100% NATURAL CEREAL', 'OZ', '35', '6', '8','CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('4', '40% BRAN FLAKES, POST', 'OZ', '90', '0', '22','CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('6', 'ALL-BRAN CEREAL', 'OZ', '2', '70', '4','CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('8', 'ALMONDS, WHOLE', 'OZ', '65', '5', '6','NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('10', 'ANGELFOOD CAKE, FROM MIX', 'PIECE', '25', '0', '29','CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('12', 'APPLE PIE', 'PIE', '2420', '05', '360','PIE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('14', 'APPLESAUCE, CANNED, SWEETENED ', 'CUP', '95', '0', '5', 'SAUCE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('16', 'APPLES, DRIED, SULFURED', 'RINGS', '15', '0', '42', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('18', 'APPLES, RAW, UNPEELED,2 PER LB', 'PER', '7', '1', '3', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('20', 'APRICOT NECTAR, NO ADDED VIT C', 'CUP', '40', '0', '36', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('22', 'APRICOTS, CANNED, JUICE PACK', 'HALVES', '13', '0', '1', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('24', 'APRICOTS, DRIED, UNCOOKED', 'CUP', '80', '30', '5', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('26', 'APRICOT, CANNED, HEAVY SYRUP', 'CUP', '25', '0', '55', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('28', 'ARTICHOKES, GLOBE, COOKED, DRN', 'ARTCHK', '55', '0', '2','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('30', 'ASPARAGUS, CKD FRM FRZ,DR,SPER', 'SPEARS', '3', '0', '3','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('32', 'ASPARAGUS, CKD FRM RAW,DR,SPER', 'SPEARS', '3', '0', '3','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('34', 'ASPARAGUS,CANNED,SPEARS,W/SALT', 'SPEARS', '2', '0', '2','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('36', 'AVOCADOS, FLORIDA', 'AVOCDO', '340', '27', '5', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('38', 'BAGELS, PLAIN', 'BAGEL', '200', '2', '38', 'BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('40', 'BAKING POWDER, STRGHT PHOSPHAT', 'TSP', '5', '0', '8', 'BAKING INGREDIENTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('42', 'BAKING POWDER,SAS,CAPO4+CASO4 ', '1', '1', '1', '0', 'BAKING INGREDIENTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('44', 'BAKING PWDR BISCUITS,HOMERECPE', 'BISCUT', '0', '5', '3', 'BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('46', 'BAMBOO SHOOTS, CANNED, DRAINED', 'CUP', '4', '25', '2', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('48', 'BANANAS, SLICED', 'CUP', '35', '40', '2', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('50', 'BARLEY, PEARLED,LIGHT, UNCOOKD', 'CUP', '700', '2', '58', 'GRAIN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('52', 'BEAN SPROUTS, MUNG, RAW', 'CUP', '30', '0', '6', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('54', 'BEANS,DRY,CANNED,W/FRANKFURTER', 'CUP', '365', '8', '32', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('56', 'BEANS,DRY,CANNED,W/PORK+TOMSCE', 'CUP', '30', '7', '48', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('58', 'BEEF BROTH, BOULLN, CONSM,CNND', 'CUP', '0', '5', '3', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('60', 'BEEF HEART, BRAISED', 'OZ', '50', '5', '0', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('62', 'BEEF NOODLE SOUP, CANNED', 'CUP', '85', '3', '9', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('64', 'BEEF ROAST, EYE O RND, LEAN', 'OZ', '22', '5', '0', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('66', 'BEEF ROAST, RIB, LEAN ONLY', 'OZ', '75', '9', '0', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('68', 'BEEF STEAK,SIRLOIN,BROIL,LEAN ', 'OZ', '2', '6', '0', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('70', 'BEEF, CANNED, CORNED', 'OZ', '61', '10', '0', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('72', 'BEEF, CKD,BTTM ROUND,LEAN+ FAT', 'OZ', '73', '1', '0', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('74', 'BEEF, CKD,CHUCK BLADE,LEAN+FAT', 'OZ', '8', '26', '0', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('76', 'BEER, LIGHT', 'FL', '7', '0', '5', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('78', 'BEET GREENS, COOKED, DRAINED', 'CUP', '40', '0', '8', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('80', 'BEETS, CANNED, DRAINED,W/ SALT', 'CUP', '55', '0', '2', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('82', 'BEETS, COOKED, DRAINED, WHOLE ', 'BEETS', '15', '0', '7', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('84', 'BLACK BEANS, DRY, COOKED,DRAND', 'CUP', '4', '225', '5', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('86', 'BLACKEYE PEAS, IMMATR,RAW,CKED', 'CUP', '30', '80', '3', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('88', 'BLUE CHEESE', 'OZ', '0', '8', '6','CHEESE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('90', 'BLUEBERRIES, FROZEN, SWEETENED', 'CUP', '85', '0', '5', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('92', 'BLUEBERRIES, RAW', 'CUP', '20', '80', '0', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('94', 'BLUEBERRY MUFFINS,FROM COM MIX', 'MUFFIN', '40', '5', '22', 'CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('96', 'BLUEBERRY PIE', 'PIECE', '380', '7', '55','PIE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('98', 'BOSTON BROWN BREAD,W/WHTECRNM ', 'SLICE', '2', '95', '3', 'BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('100', 'BOUILLON, DEHYDRTD, UNPREPARED', 'PKT', '6', '5', '3', 'SOUPS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('102', 'BRAN MUFFINS, HOME RECIPE', 'MUFFIN', '25', '6', '9', 'CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('104', 'BRAZIL NUTS', 'OZ', '85', '9', '4', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('106', 'BREAD STUFFING,FROM MX,MOIST', 'CUP', '420', '26', '40', 'BREAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('108', 'BROCCOLI, FRZN, COOKED, DRANED', 'CUP', '50', '0', '6', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('110', 'BROCCOLI, RAW', 'SPEAR', '8', '40', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('112', 'BROCCOLI, RAW, COOKED, DRAINED', 'SPEAR', '0', '5', '8', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('114', 'BROWN GRAVY FROM DRY MIX', 'CUP', '80', '2', '4', 'SAUCE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('116', 'BROWNIES W/ NUTS,FRSTNG,CMMRCL', 'BROWNE', '0', '4', '6', 'CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('118', 'BRUSSELS SPROUTS, RAW, COOKED ', 'CUP', '3', '60', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('120', 'BULGUR, UNCOOKED', 'CUP', '600', '3', '29', 'GRAIN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('122', 'BUTTERMILK, FLUID', 'CUP', '0', '2', '8', 'MILK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('124', 'BUTTER, SALTED', 'TBSP', '0', '3', '4', 'BUTTER')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('126', 'BUTTER, UNSALTED', 'PAT', '35', '4', '0', 'BUTTER')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('130', 'CABBAGE, CHINESE,PE-TSAI, RAW ', 'CUP', '0', '2', '76', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('132', 'CABBAGE, COMMON, RAW', 'CUP', '5', '0', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('134', 'CABBAGE, SAVOY, RAW', 'CUP', '20', '0', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('136', 'CAMEMBERT CHEESE', 'WEDGE', '5', '9', '0', 'CHEESE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('138', 'CAP'N CRUNCH CEREAL', 'OZ', '20', '3', '2','CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('140', 'CAROB FLOUR', 'CUP', '255', '0', '26', 'BAKING INGREDIENTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('142', 'CARROT CAKE,CREMCHESE FRST,REC', 'PIECE', '385', '2', '48', 'CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('144', 'CARROTS, CANNED,DRND, W/O SALT', 'CUP', '35', '0', '8', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('146', 'CARROTS, COOKED FROM RAW', 'CUP', '70', '0', '6', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('148', 'CARROTS, RAW, WHOLE', 'CARROT', '30', '0', '7', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('150', 'CASHEW NUTS, DRY ROASTD,UNSALT', 'CUP', '785', '63', '45', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('152', 'CASHEW NUTS, DRY ROASTED,SALTD', 'CUP', '785', '63', '45', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('154', 'CASHEW NUTS, OIL ROASTD,SALTED', 'OZ', '65', '4', '8', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('156', 'CASHEW NUTS, OIL ROASTD,UNSALT', 'OZ', '65', '4', '8', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('158', 'CATSUP', 'TBSP', '5', '0', '4', 'SAUCE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('160', 'CAULIFLOWER, COOKED FROM RAW', 'CUP', '30', '0', '6', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('162', 'CELERY SEED', 'TSP', '0', '2', '6', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('164', 'CELERY, PASCAL TYPE, RAW,STALK', 'STALK', '5', '0', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('166', 'CHEDDAR CHEESE', 'OZ', '5', '9', '0', 'CHEESE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('168', 'CHEERIOS CEREAL', 'OZ', '0', '2', '4','CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('170', 'CHEESE CRACKERS, SANDWCH,PEANT', 'SANDWH', '40', '2', '5','CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('172', 'CHEESEBURGER, 4OZ PATTY', 'SANDWH', '525', '3', '40', 'BURGER')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('174', 'CHEESECAKE', 'CAKE', '3350', '23', '37', 'CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('176', 'CHERRIES, SOUR,RED,CANND,WATER', 'CUP', '90', '0', '22', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('178', 'CHERRY PIE', 'PIE', '2465', '07', '363','PIE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('180', 'CHESTNUTS, EUROPEAN, ROASTED', 'CUP', '350', '3', '76', 'NUTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('182', 'CHICKEN AND NOODLES, HOME RECP', 'CUP', '365', '8', '26', 'NOODLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('184', 'CHICKEN CHOW MEIN, HOME RECIPE', 'CUP', '255', '0', '3', 'CHICKEN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('186', 'CHICKEN GRAVY FROM DRY MIX', 'CUP', '85', '2', '4', 'CHICKEN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('188', 'CHICKEN LIVER, COOKED', 'LIVER', '0', '3', '5', 'CHICKEN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('190', 'CHICKEN NOODLE SOUP,DEHYD,PRPD', 'PKT', '6', '40', '2', 'NOODLE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('192', 'CHICKEN RICE SOUP, CANNED', 'CUP', '60', '2', '7', 'RICE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('194', 'CHICKEN, CANNED, BONELESS', 'OZ', '4', '11', '0', 'CHICKEN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('196', 'CHICKEN, FRIED, BATTER,DRMSTCK', 'OZ', '3', '11', '6', 'CHICKEN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('198', 'CHICKEN, FRIED, FLOUR, DRMSTCK', 'OZ', '0', '20', '3', 'CHICKEN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('200', 'CHICKEN, ROASTED, DRUMSTICK', 'OZ', '12', '2', '0', 'CHICKEN')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('202', 'CHICKPEAS, COOKED, DRAINED', 'CUP', '270', '4', '5','VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('204', 'CHILI POWDER', 'TSP', '0', '6', '5', 'HERBS&SPICY')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('206', 'CHOCOLATE CHIP COOKIES,HME RCP', 'COOKIE', '46', '11', '26', 'COOKIES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('208', 'CHOCOLATE MILK, LOWFAT 1%', 'CUP', '60', '3', '26', 'MILK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('210', 'CHOCOLATE MILK, REGULAR', 'CUP', '20', '8', '26', 'MILK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('212', 'CHOP SUEY W/ BEEF + PORK,HMRCP', 'CUP', '300', '7', '3', 'BEEF')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('214', 'CLAM CHOWDER, MANHATTAN, CANND', 'CUP', '80', '2', '4', 'SOUPS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('216', 'CLAMS, CANNED, DRAINED', 'OZ', '28', '2', '1', 'SEAFOODS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('218', 'CLUB SODA', 'FL', '0', '355', '1', 'BAKING INGREDIENTS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('220', 'COCA PWDR W/O NONFAT DRY MILK ', 'OZ', '18', '1', '9', 'MILK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('222', 'COCOA PWDR W/ NOFAT DRMLK,PRPD', 'SERVNG', '22', '00', '3', 'MILK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('224', 'COCONUT, RAW, PIECE', 'PIECE', '60', '5', '7', 'FRUITS')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('226', 'COFFEECAKE, CRUMB, FROM MIX', 'CAKE', '385', '4', '225', 'CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('228', 'COFFEE, BREWED', 'FL', '0', '18', '225', 'COFFEE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('230', 'COLA, DIET, ASPARTAME ONLY', 'FL', '0', '355', '225', 'DRINK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('232', 'COLA, DIET, SACCHARIN ONLY', 'FL', '0', '355', '225', 'DRINK')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('234', 'COLLARDS, COOKED FROM FROZEN', 'CUP', '2', '60', '5', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('236', 'COOKED SALAD DRSSING, HOME RCP', 'TBSP', '25', '2', '9','SALAD')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('238', 'CORN FLAKES, KELLOGG'S', 'OZ', '0', '24', '2', 'CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('240', 'CORN GRITS, COOKED, INSTANT', 'PKT', '80', '0', '8', 'CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('242', 'CORN GRITS,CKD,REG,WHTE,W/SALT', 'CUP', '45', '0', '3', 'CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('244', 'CORN GRITS,CKD,REG,YLLW,W/SALT', 'CUP', '45', '0', '3', 'CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('246', 'CORN MUFFINS, HOME RECIPE', 'MUFFIN', '45', '5', '2', 'CAKE')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('248', 'CORN OIL', 'TBSP', '25', '4', '0', 'OIL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('250', 'CORNMEAL,DEGERMED,ENRCHED,COOK', 'CUP', '20', '0', '26', 'CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('252', 'CORNMEAL,WHOLE-GRND,UNBOLT,DRY', 'CUP', '435', '5', '90', 'CEREAL')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('254', 'CORN, CNND,CRM STL,WHIT,W/SALT', 'CUP', '46', '85', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('256', 'CORN, CNND,CRM STL,YLLW,W/SALT', 'CUP', '46', '85', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('258', 'CORN, COOKED FRM FROZN, WHITE ', 'EAR', '60', '0', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('260', 'CORN, COOKED FRM FROZN, YELLOW', 'EAR', '60', '0', '4', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('262', 'CORN, COOKED FROM RAW, YELLOW ', 'EAR', '9', '85', '3', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('264', 'CORN,CNND,WHL KRNL,WHTE,W/SALT', 'CUP', '4', '65', '5', 'VEGETABLES')");
+//			db.execSQL("insert into "+Foods.TABLE_NAME+" values('266', 'CORN,CNND,WHL KRNL,YLLW,W/SALT', 'CUP', '4', '65', '5', 'VEGETABLES')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('268', 'COTTAGE CHEESE,CREMD,SMLL CURD', 'CUP', '25', '9', '6', 'CHEESE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('270', 'COTTAGE CHEESE,LOWFAT 2%', 'CUP', '205', '4', '8', 'CHEESE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('272', 'CR OF CHICKEN SOUP W/ H20,CNND', 'CUP', '5', '7', '9', 'SOUPS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('274', 'CR OF MUSHROM SOUP W/ H2O,CNND', 'CUP', '30', '9', '2', 'SOUPS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('276', 'CRABMEAT, CANNED', 'CUP', '35', '3', '2','SEAFOODS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('278', 'CRACKED-WHEAT BREAD', 'SLICE', '2', '65', '0', 'BREAD')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('280', 'CRANBERRY JUICE COCKTAL W/VITC', 'CUP', '45', '0', '38', 'JUICE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('282', 'CREAM CHEESE', 'OZ', '0', '0', '2', 'CHEESE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('284', 'CREME PIE', 'PIE', '270', '39', '35','PIE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('286', 'CRM WHEAT,CKD, QUICK, NO SALT ', 'CUP', '40', '0', '29', 'GRAIN')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('288', 'CRM WHEAT,CKD,REG,INST,NO SALT', 'CUP', '40', '0', '29', 'GRAIN')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('290', 'CROISSANTS', 'CROSST', '235', '2', '7', 'BREAD')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('292', 'CURRY POWDER', 'TSP', '5', '0', '2', 'HERBS&SPICY')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('294', 'CUSTARD PIE', 'PIECE', '330', '7', '36','PIE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('296', 'DANDELION GREENS, COOKED, DRND', 'CUP', '7', '35', '2', 'VEGETABLES')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('298', 'DANISH PASTRY, PLAIN, NO NUTS ', 'OZ', '0', '6', '3', 'CAKE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('302', 'DATES', 'DATES', '23', '0', '61', 'FRUITS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('304', 'DEVIL FOOD CAKE,CHOCFRST,FMX', 'CAKE', '3755', '36', '645','CAKE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('308', 'DOUGHNUTS, YEAST-LEAVEND,GLZED', 'DONUT', '235', '3', '26','BREAD')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('310', 'EGGNOG', 'CUP', '340', '9', '34', 'WINE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('312', 'EGGS, COOKED, FRIED', 'EGG', '90', '7', '6', 'EGGS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('314', 'EGGS, COOKED, POACHED', 'EGG', '75', '5', '6', 'EGGS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('316', 'EGGS, RAW, WHITE', 'WHITE', '5', '0', '4', 'EGGS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('318', 'EGGS, RAW, YOLK', 'YOLK', '60', '5', '0', 'EGGS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('320', 'ENDIVE, CURLY, RAW', 'CUP', '0', '2', '5','VEGETABLES')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('322', 'ENGLISH MUFFINS, PLAIN', 'MUFFIN', '27', '40', '5', 'CAKE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('324', 'EVAPORATED MILK, SKIM, CANNED ', 'CUP', '29', '200', '9', 'MILK')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('328', 'FETA CHEESE', 'OZ', '75', '6', '4', 'CHEESE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('330', 'FIGS, DRIED', 'FIGS', '47', '2', '1', 'FRUITS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('332', 'FILBERTS, (HAZELNUTS) CHOPPED ', 'OZ', '80', '8', '4', 'NUTS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('334', 'FISH SANDWICH, REG, W/ CHEESE ', 'SANDWH', '420', '23', '39', 'SEAFOODS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('336', 'FLOUNDER OR SOLE, BAKED, BUTTR', 'OZ', '40', '6', '0', 'SEAFOODS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('338', 'FLOUNDER OR SOLE, BAKED,W/OFAT', 'OZ', '26', '1', '0', 'SEAFOODS')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('340', 'FRANKFURTER, COOKED', 'FRANK', '45', '3', '5', 'SAUSAGE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('342', 'FRENCH OR VIENNA BREAD', 'LOAF', '270', '8', '230', 'BREAD')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('344', 'FRENCH SALAD DRESSING, REGULAR', 'TBSP', '85', '9', '0','SALAD')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('346', 'FRIED PIE, APPLE', 'PIE', '255', '4', '3','PIE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('348', 'FROOT LOOPS CEREAL', 'OZ', '25', '0', '2','CEREAL')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('350', 'FRUIT COCKTAIL,CNND,JUICE PACK', 'CUP', '5', '0', '29', 'WINE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('352', 'FRUITCAKE,DARK, FROM HOMERECIP', 'CAKE', '585', '228', '783', 'CAKE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('354', 'FUDGE, CHOCOLATE, PLAIN', 'OZ', '5', '3', '2', 'DESSERT')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('356', 'GELATIN DESSERT, PREPARED', 'CUP', '35', '0', '17', 'DESSERT')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('358', 'GINGER ALE', 'FL', '0', '0', '32', 'DRINK')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('360', 'GINGERBREAD CAKE, FROM MIX', 'PIECE', '75', '4', '32','CAKE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('362', 'GIN,RUM,VODKA,WHISKY 86-PROOF ', 'F', '2', '0', '42','WINE')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('364', 'GOLDEN GRAHAMS CEREAL', 'OZ', '24', '0', '2','CEREAL')");
+			db.execSQL("insert into "+Foods.TABLE_NAME+" values('366', 'GRAPE-NUTS CEREAL', 'OZ', '0', '0', '23','CEREAL')");
+			db.execSQL("insert into "+UserInfo.TABLE_NAME+" values('1', 'SoftwareDesign', 'mis507@email.arizona.edu', '09/01/1990', 'male','6.03' ,'156', 'Stay')");
+		    
+		}
+
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			db.execSQL(SQL_DELETE_ACTIVITY_ENTRIES);
+			db.execSQL(SQL_DELETE_FOOD_ENTRIES);
+			db.execSQL(SQL_DELETE_USER_ENTRIES);
+			db.execSQL(SQL_DELETE_FOOD_HISTORY_ENTRIES);
+			db.execSQL(SQL_DELETE_ACT_HISTORY_ENTRIES);
+			db.execSQL(SQL_DELETE_USER_TYPE_ENTRIES);
+			onCreate(db);			
+		}
+		public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+	        onUpgrade(db, oldVersion, newVersion);
+	    }
+		
+		//insert activity
+		public void AvcInsert(String ID, String Name, String Cal, String Type){
+			SQLiteDatabase db =this.getWritableDatabase();
+			
+			ContentValues values= new ContentValues();
+			values.put(Activities.COLUMN_NAME_ACTIVITY_ID, ID);
+			values.put(Activities.COLUMN_NAME_ACTIVITY_NAME, Name);
+			values.put(Activities.COLUMN_NAME_UNIT_CAL, Cal);
+	     	values.put(Activities.COLUMN_NAME_ACTIVITY_TYPE, Type);
+			db.insert(Activities.TABLE_NAME,null, values);	
+			db.close();
+		}
+		
+		//insert food
+		public void FoodInsert(String ID, String Name, String unit,String Cal, String Carbonhydrate, String protein,String Category){
+			SQLiteDatabase db = this.getWritableDatabase();
+			
+			ContentValues values= new ContentValues();
+			values.put(Foods.COLUMN_NAME_FOOD_ID, ID);
+			values.put(Foods.COLUMN_NAME_FOOD_NAME, Name);
+			values.put(Foods.COLUMN_NAME_UNIT, unit);
+			values.put(Foods.COLUMN_NAME_UNIT_CAL, Cal);
+			values.put(Foods.COLUMN_NAME_CARBOHYDRATE, Carbonhydrate);
+			values.put(Foods.COLUMN_NAME_PROTEIN, protein);
+			values.put(Foods.COLUMN_NAME_CATEGORY, Category);
+			
+		    db.insert(Foods.TABLE_NAME,null,values);
+		    db.close();
+		}
+		
+		//insert user
+		public void UserInsert(String ID, String Name, String Email, String Birth, String sex, String height, String weight, String choice){
+			SQLiteDatabase db = this.getWritableDatabase();
+			
+			ContentValues values= new ContentValues();
+			values.put(UserInfo.COLUMN_NAME_USER_ID, ID);
+			values.put(UserInfo.COLUMN_NAME_USER_NAME, Name);
+			values.put(UserInfo.COLUMN_NAME_EMAIL, Email);
+			values.put(UserInfo.COLUMN_NAME_BIRTH, Birth);
+			values.put(UserInfo.COLUMN_NAME_SEX, sex);
+			values.put(UserInfo.COLUMN_NAME_HEIGHT, height);
+			values.put(UserInfo.COLUMN_NAME_WEIGHT, weight);
+			values.put(UserInfo.COLUMN_NAME_FITNESS_CHOICE, choice);
+			
+            db.insert(UserInfo.TABLE_NAME,null, values);	
+            db.close();
+		}
+		
+		// insert history
+		/*
+		public void FoodHistoryInsert(String ID, String date, String time, String foodID, String num, String mealcat){
+			SQLiteDatabase db = this.getWritableDatabase();
+		
+			ContentValues values= new ContentValues();
+			values.put(FoodHistory.COLUMN_NAME_FOOD_HISTORY_ID, ID);
+			values.put(FoodHistory.COLUMN_NAME_DATE, date);
+			values.put(FoodHistory.COLUMN_NAME_TIME, time);
+			values.put(FoodHistory.COLUMN_NAME_FOOD, foodID);
+			values.put(FoodHistory.COLUMN_NAME_COSUME_QUANTITY, num);
+			values.put(FoodHistory.COLUM_NAME_MEALCATEGORY, mealcat);
+			
+			
+			db.insert(FoodHistory.TABLE_NAME,null, values);	
+			db.close();
+		}
+           */
+		public void FoodHistoryInsert(String foodID, String num, String mealcat){
+			SQLiteDatabase db = this.getWritableDatabase();
+		 String ID="";
+		 String date = "";
+		 String time="";
+		 
+		 
+		 Calendar ca = Calendar.getInstance();
+		 int year = ca.get(Calendar.YEAR);
+		 int month=ca.get(Calendar.MONTH)+1;
+		 int day=ca.get(Calendar.DATE);
+		 int minute=ca.get(Calendar.MINUTE);
+		 int hour=ca.get(Calendar.HOUR_OF_DAY);
+		 int second=ca.get(Calendar.SECOND);
+		 int WeekOfYear = ca.get(Calendar.DAY_OF_WEEK);
+		
+		 TimeProcess timeprocess = new TimeProcess();
+		 ID = Integer.toString(year)+
+		     timeprocess.timeInsert(Integer.toString(month))+
+		     timeprocess.timeInsert(Integer.toString(day))+
+		     timeprocess.timeInsert(Integer.toString(hour))+
+		     timeprocess.timeInsert(Integer.toString(minute))+
+		     timeprocess.timeInsert(Integer.toString(second));
+		 
+		 date= timeprocess.timeInsert(Integer.toString(month))+"/"+timeprocess.timeInsert(Integer.toString(day))+"/"+Integer.toString(year);
+		 time = timeprocess.timeInsert(Integer.toString(hour))+":"+timeprocess.timeInsert(Integer.toString(minute))+":"+timeprocess.timeInsert(Integer.toString(second));
+		 
+		 
+		    ContentValues values= new ContentValues();
+			values.put(FoodHistory.COLUMN_NAME_FOOD_HISTORY_ID, ID);
+			values.put(FoodHistory.COLUMN_NAME_DATE, date);
+			values.put(FoodHistory.COLUMN_NAME_TIME, time);
+			values.put(FoodHistory.COLUMN_NAME_FOOD, foodID);
+			values.put(FoodHistory.COLUMN_NAME_COSUME_QUANTITY, num);
+			values.put(FoodHistory.COLUM_NAME_MEALCATEGORY, mealcat);
+			
+			
+			db.insert(FoodHistory.TABLE_NAME,null, values);	
+			System.out.println("add ID ="+ID);
+			System.out.println("add date ="+date);
+			System.out.println("add time ="+time);
+			db.close();
+		}
+		
+		
+		
+		
+		public void ActHistoryInsert(String activityID, String num){
+			SQLiteDatabase db = this.getWritableDatabase();
+			 String ID="";
+			 String date = "";
+			 String time="";
+			 
+			 
+			 Calendar ca = Calendar.getInstance();
+			 int year = ca.get(Calendar.YEAR);
+			 int month=ca.get(Calendar.MONTH)+1;
+			 int day=ca.get(Calendar.DATE);
+			 int minute=ca.get(Calendar.MINUTE);
+			 int hour=ca.get(Calendar.HOUR_OF_DAY);
+			 //calendar.
+			 int second=ca.get(Calendar.SECOND);
+			 int WeekOfYear = ca.get(Calendar.DAY_OF_WEEK);
+			 TimeProcess timeprocess = new TimeProcess();
+			 ID = Integer.toString(year)+
+			     timeprocess.timeInsert(Integer.toString(month))+
+			     timeprocess.timeInsert(Integer.toString(day))+
+			     timeprocess.timeInsert(Integer.toString(hour))+
+			     timeprocess.timeInsert(Integer.toString(minute))+
+			     timeprocess.timeInsert(Integer.toString(second));
+			 
+			 date= timeprocess.timeInsert(Integer.toString(month))+"/"+timeprocess.timeInsert(Integer.toString(day))+"/"+Integer.toString(year);
+			 time = timeprocess.timeInsert(Integer.toString(hour))+":"+timeprocess.timeInsert(Integer.toString(minute))+":"+timeprocess.timeInsert(Integer.toString(second));
+			System.out.println("add ID ="+ID);
+			System.out.println("add date ="+date);
+			System.out.println("add time ="+time);
+			 
+			ContentValues values= new ContentValues();
+			values.put(ActHistory.COLUMN_NAME_ACT_HISTORY_ID, ID);
+			values.put(ActHistory.COLUMN_NAME_DATE, date);
+			values.put(ActHistory.COLUMN_NAME_TIME, time);
+			values.put(ActHistory.COLUMN_NAME_ACT, activityID);
+			values.put(ActHistory.COLUMN_NAME_COSUME_QUANTITY, num);
+			
+			
+			db.insert(ActHistory.TABLE_NAME,null, values);	
+			db.close();
+		}
+		
+		//insert user type information
+		public void UserTypeInsert(String type, String sex, String agetop, String agebottom, String calfactor,String calconstant, String ch, String protein){
+			SQLiteDatabase db=this.getWritableDatabase();
+			
+			ContentValues values=new ContentValues();
+			values.put(UserType.COLUMN_NAME_TYPE, type);
+			values.put(UserType.COLUMN_NAME_SEX, sex);
+			values.put(UserType.COLUMN_NAME_AGETOP, agetop);
+			values.put(UserType.COLUMN_NAME_AGEBOTTOM, agebottom);
+			values.put(UserType.COLUMN_NAME_CALFACTOR, calfactor);
+			values.put(UserType.COLUMN_NAME_CALCONSTANT, calconstant);
+			values.put(UserType.COLUMN_NAME_CH, ch);
+			values.put(UserType.COLUMN_NAME_PROTEIN, protein);
+			
+			db.insert(UserType.TABLE_NAME, null, values);
+			db.close();
+		}
+		
+		// get activity with known activity id
+		public Activity getAvt(int id){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Activities.TABLE_NAME, new String[]{
+			Activities.COLUMN_NAME_ACTIVITY_ID,
+			Activities.COLUMN_NAME_ACTIVITY_NAME,
+			Activities.COLUMN_NAME_UNIT_CAL}, Activities.COLUMN_NAME_ACTIVITY_ID+" =?", new String[]{String.valueOf(id)}, null, null, null);
+			
+		    cursor.moveToFirst();
+			if(cursor.moveToNext()){
+				Activity temp=new Activity();
+		    	temp.ActID=cursor.getString(0);
+		    	temp.ActName=cursor.getString(1);
+		    	temp.ActCal=cursor.getString(2);
+		    	return temp;
+		    			    	
+		    }
+		    cursor.close();
+		    return null;
+		}
+		
+		// get Activity calories with known full activity name
+		public String getActCal1(String name){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Activities.TABLE_NAME, new String[]{
+					Activities.COLUMN_NAME_UNIT_CAL
+			}, Activities.COLUMN_NAME_ACTIVITY_NAME+" =?", new String[]{
+					name
+			}, null, null,null,null);
+			cursor.moveToFirst();
+			String cal="";
+			if(cursor.moveToNext()){
+				cal=cursor.getString(0);
+			}
+			return cal;
+		}
+	/*	
+		//get food name with known category
+		public List<String> getFoodName(String category){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Foods.TABLE_NAME, new String[]{
+					Foods.COLUMN_NAME_FOOD_NAME
+			}, Foods.COLUMN_NAME_CATEGORY+" =?", new String[]{category}, null, null, null,null);
+			cursor.moveToFirst();
+			List<String>list=new ArrayList<String>();
+			while(cursor.moveToNext()){
+				list.add(cursor.getString(0));
+			}
+			cursor.close();
+			db.close();
+			return list;
+		}
+		*/
+		//get activity with type
+		public List<Activity> getAct(String Type){
+			SQLiteDatabase db=this.getReadableDatabase();
+			//db.execSQL("drop table Activity");
+			
+			Cursor cursor=db.rawQuery("select * from "+Activities.TABLE_NAME+" where actType = '"+Type+"'" ,null);
+		  
+		    List<Activity> list=new ArrayList<Activity>();
+		    
+		    for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+		    {
+		    	Activity temp=new Activity();
+		    	temp.ActID=cursor.getString(0);
+		    	temp.ActName=cursor.getString(1);
+		    	System.out.println(temp.ActName);
+		    	temp.ActCal=cursor.getString(2);
+		    	list.add(temp);
+		    }
+		    cursor.close();
+		    return list;
+		}
+		
+		
+		//overload
+		public List<Activity> getAct(){
+			SQLiteDatabase db=this.getReadableDatabase();
+			//db.execSQL("drop table Activity");
+			
+			Cursor cursor=db.rawQuery("select * from "+Activities.TABLE_NAME ,null);
+		  
+		    List<Activity> list=new ArrayList<Activity>();
+		    
+		    for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+		    {
+		    	Activity temp=new Activity();
+		    	temp.ActID=cursor.getString(0);
+		    	temp.ActName=cursor.getString(1);
+		    	System.out.println(temp.ActName);
+		    	temp.ActCal=cursor.getString(2);
+		    	list.add(temp);
+		    }
+		    cursor.close();
+		    return list;
+		}
+		
+		
+		//get food with known ID
+		public Food getFood(int id){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Foods.TABLE_NAME, new String[]{
+			Foods.COLUMN_NAME_FOOD_NAME,
+			Foods.COLUMN_NAME_UNIT,
+			Foods.COLUMN_NAME_UNIT_CAL,
+			Foods.COLUMN_NAME_CARBOHYDRATE,
+			Foods.COLUMN_NAME_PROTEIN,
+			Foods.COLUMN_NAME_CATEGORY}, Foods.COLUMN_NAME_FOOD_ID+" =?", new String[]{String.valueOf(id)}, null, null, null,null);
+			
+		    cursor.moveToFirst();
+		    Food temp=new Food();
+			if(cursor.moveToNext()){
+		    	temp.FoodID=String.valueOf(id);
+		    	temp.FoodName=cursor.getString(1);
+		    	temp.Unit=cursor.getString(2);
+		    	temp.FoodCal=cursor.getString(3);
+		    	temp.Carbohydrate=cursor.getString(4);
+		    	temp.Protein=cursor.getString(5);
+		    	temp.Category=cursor.getString(6);		    			    	
+		    }
+		    cursor.close();
+		    db.close();
+		    return temp;	
+		}
+				
+		// get food calorie with known ID		
+		public String getFoodCal(String ID){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Foods.TABLE_NAME, new String[]{
+					Foods.COLUMN_NAME_UNIT_CAL
+			}, Foods.COLUMN_NAME_FOOD_ID+" =?", new String[]{ID}, null, null, null,null);
+			
+			cursor.moveToFirst();
+			String cal="";
+			if(cursor.moveToNext()){
+				cal=cursor.getString(0);
+			}
+			cursor.close();
+			db.close();
+			return cal;
+		}
+		
+		// get food protein with known ID		
+		public String getFoodPrt(String ID){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Foods.TABLE_NAME, new String[]{
+					Foods.COLUMN_NAME_PROTEIN
+			}, Foods.COLUMN_NAME_FOOD_ID+" =?", new String[]{ID}, null, null, null,null);
+			
+			cursor.moveToFirst();
+			String prt="";
+			if(cursor.moveToNext()){
+				prt=cursor.getString(0);
+			}
+			cursor.close();
+			db.close();
+			return prt;
+		}
+		
+		// get food carbohydrate with known ID		
+		public String getFoodCht(String ID){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Foods.TABLE_NAME, new String[]{
+					Foods.COLUMN_NAME_CARBOHYDRATE
+			}, Foods.COLUMN_NAME_FOOD_ID+" =?", new String[]{ID}, null, null, null,null);
+			
+		
+			String cht="";
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				cht=cursor.getString(0);
+			}
+			cursor.close();
+			db.close();
+			return cht;
+		}
+		
+		//get food calorie with known name
+		public String getFoodCal_name(String name){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+Foods.COLUMN_NAME_UNIT_CAL+" from "+Foods.TABLE_NAME+" where "+Foods.COLUMN_NAME_FOOD_NAME+" =?", new String[]{name});
+			String intakeCal="";
+			if (cursor != null && cursor.getCount()>0) {
+				cursor.moveToFirst();
+				intakeCal=cursor.getString(cursor.getColumnIndex(Foods.COLUMN_NAME_UNIT_CAL));
+				cursor.close();
+				db.close();
+				return intakeCal;
+			}
+			cursor.close();
+			db.close();
+			return null;
+	}
+		
+		public String getFoodCal_ID(String id){
+				SQLiteDatabase db=this.getReadableDatabase();
+				Cursor cursor=db.rawQuery("select "+Foods.COLUMN_NAME_UNIT_CAL+" from "+Foods.TABLE_NAME+" where "+Foods.COLUMN_NAME_FOOD_ID+" =?", new String[]{id});
+				String intakeCal="";
+				if (cursor != null && cursor.getCount()>0) {
+					cursor.moveToFirst();
+					intakeCal=cursor.getString(cursor.getColumnIndex(Foods.COLUMN_NAME_UNIT_CAL));
+					cursor.close();
+					db.close();
+					return intakeCal;
+				}
+				cursor.close();
+				db.close();
+				return null;
+		}
+		
+		public String getFoodPrt_ID(String id){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+Foods.COLUMN_NAME_PROTEIN+" from "+Foods.TABLE_NAME+" where "+Foods.COLUMN_NAME_FOOD_ID+" =?", new String[]{id});
+			String intakePrt="";
+			if (cursor != null && cursor.getCount()>0) {
+				cursor.moveToFirst();
+				intakePrt=cursor.getString(cursor.getColumnIndex(Foods.COLUMN_NAME_PROTEIN));
+				cursor.close();
+				db.close();
+				return intakePrt;
+			}
+			cursor.close();
+			db.close();
+			return null;
+		}
+		
+		public String getFoodCht_ID(String id){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+Foods.COLUMN_NAME_CARBOHYDRATE+" from "+Foods.TABLE_NAME+" where "+Foods.COLUMN_NAME_FOOD_ID+" =?", new String[]{id});
+			String intakeCht="";
+			if (cursor != null && cursor.getCount()>0) {
+				cursor.moveToFirst();
+				intakeCht=cursor.getString(cursor.getColumnIndex(Foods.COLUMN_NAME_CARBOHYDRATE));
+				cursor.close();
+				db.close();
+				return intakeCht;
+			}
+			cursor.close();
+			db.close();
+			return null;
+		}
+		
+		
+		
+		
+		//get activity calorie with known name
+		//get food calorie with known name
+		public String getActivityCal_name(String name){
+				SQLiteDatabase db=this.getReadableDatabase();
+				Cursor cursor=db.rawQuery("select "+Activities.COLUMN_NAME_UNIT_CAL+" from "+Activities.TABLE_NAME+" where "+Activities.COLUMN_NAME_ACTIVITY_NAME+" =?", new String[]{name});
+				String outCal="";
+				if (cursor != null && cursor.getCount()>0) {
+					cursor.moveToFirst();
+					outCal=cursor.getString(cursor.getColumnIndex(Activities.COLUMN_NAME_UNIT_CAL));
+					cursor.close();
+					db.close();
+					return outCal;
+				}
+				cursor.close();
+				db.close();
+				return null;
+				
+			}
+		
+		
+		//get food name with known category
+		public List<String> getFoodName(String category){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Foods.TABLE_NAME, new String[]{
+					Foods.COLUMN_NAME_FOOD_NAME
+			}, Foods.COLUMN_NAME_CATEGORY+" =?", new String[]{category}, null, null, null,null);
+			
+			List<String>list=new ArrayList<String>();
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				list.add(cursor.getString(0));
+			}
+			cursor.close();
+			db.close();
+			return list;
+		}
+		
+      //get unit with known food name
+		/*
+		public List<String> getunit(String name){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.query(Foods.TABLE_NAME, new String[]{
+					Foods.COLUMN_NAME_UNIT
+			}, Foods.COLUMN_NAME_FOOD_NAME+" =?", new String[]{name}, null, null, null,null);
+			cursor.moveToFirst();
+			List<String>list=new ArrayList<String>();
+			while(cursor.moveToNext()){
+				list.add(cursor.getString(0));
+			}
+			cursor.close();
+			return list;
+		}
+		*/
+		public String getunit(String name){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+Foods.COLUMN_NAME_UNIT+" from "+Foods.TABLE_NAME+" where "+Foods.COLUMN_NAME_FOOD_NAME+" =?", new String[]{name});
+			String unit="";
+			if (cursor != null && cursor.getCount()>0) {
+				cursor.moveToFirst();
+				unit=cursor.getString(cursor.getColumnIndex(Foods.COLUMN_NAME_UNIT));
+				cursor.close();
+				db.close();
+				return unit;
+			}
+			cursor.close();
+			db.close();
+			return null;
+			
+		}
+
+
+		
+		public String getFoodId(String name){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+Foods.COLUMN_NAME_FOOD_ID+" from "+Foods.TABLE_NAME+" where "+Foods.COLUMN_NAME_FOOD_NAME+" =?", new String[]{name});
+			String id="";
+			if (cursor != null && cursor.getCount()>0) {
+				cursor.moveToFirst();
+				id=cursor.getString(cursor.getColumnIndex(Foods.COLUMN_NAME_FOOD_ID));
+				cursor.close();
+				db.close();
+				return id;
+			}
+			cursor.close();
+			db.close();
+			return null;
+			
+		}
+		
+		public String getActivityID(String name){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+Activities.COLUMN_NAME_ACTIVITY_ID+" from "+Activities.TABLE_NAME+" where "+Activities.COLUMN_NAME_ACTIVITY_NAME+" =?", new String[]{name});
+			String id="";
+			if (cursor != null && cursor.getCount()>0) {
+				cursor.moveToFirst();
+				id=cursor.getString(cursor.getColumnIndex(Activities.COLUMN_NAME_ACTIVITY_ID));
+				cursor.close();
+				db.close();
+				return id;
+			}
+			cursor.close();
+			db.close();
+			return null;
+			
+		}
+
+		//get category
+		public List<String> getCategory(){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select distinct "+Foods.COLUMN_NAME_CATEGORY+" from "+Foods.TABLE_NAME, null);
+			
+			List<String> list=new ArrayList<String>();
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				list.add(cursor.getString(cursor.getColumnIndex(Foods.COLUMN_NAME_CATEGORY)));
+			}
+			cursor.close();
+			db.close();
+			return list;
+					
+		}
+		// get history Food ID with known date
+		public List<String> getFoodID(String date){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select distinct "+FoodHistory.COLUMN_NAME_FOOD+" from "+FoodHistory.TABLE_NAME+" where "+FoodHistory.COLUMN_NAME_DATE+" = ?", new String[] { date });
+			//cursor.moveToFirst();
+			List<String> list=new ArrayList<String>();
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				list.add(cursor.getString(cursor.getColumnIndex(FoodHistory.COLUMN_NAME_FOOD)));
+			}
+			cursor.close();
+			db.close();
+			return list;
+		}
+		// get food quantity
+		public double getFoodQuantity(String date, String FoodID){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+FoodHistory.COLUMN_NAME_COSUME_QUANTITY+" from "+FoodHistory.TABLE_NAME+" where "+FoodHistory.COLUMN_NAME_DATE+" = ? and "+FoodHistory.COLUMN_NAME_FOOD+" =?", new String[] { date, FoodID});
+			//cursor.moveToFirst();
+			double quantity=0;
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				quantity=quantity+Double.valueOf(cursor.getString(cursor.getColumnIndex(FoodHistory.COLUMN_NAME_COSUME_QUANTITY)));
+			}
+			cursor.close();
+			db.close();
+			return quantity;
+		}
+		
+		public List<String> getActID(String date){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select distinct "+ActHistory.COLUMN_NAME_ACT+" from "+ActHistory.TABLE_NAME+" where "+ActHistory.COLUMN_NAME_DATE+" = ?", new String[] { date });
+			//cursor.moveToFirst();
+			List<String> list=new ArrayList<String>();
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				list.add(cursor.getString(cursor.getColumnIndex(ActHistory.COLUMN_NAME_ACT)));
+			}
+			cursor.close();
+			return list;
+		}
+		
+		public double getActQuantity(String date, String ActID){
+			SQLiteDatabase db=this.getReadableDatabase();
+			Cursor cursor=db.rawQuery("select "+ActHistory.COLUMN_NAME_COSUME_QUANTITY+" from "+ActHistory.TABLE_NAME+" where "+ActHistory.COLUMN_NAME_DATE+" = ? and "+ActHistory.COLUMN_NAME_ACT+" =?", new String[] { date,ActID});
+			//cursor.moveToFirst();
+			double quantity=0;
+			//quantity=quantity+Double.valueOf(cursor.getString(cursor.getColumnIndex(ActHistory.COLUMN_NAME_COSUME_QUANTITY)));
+			for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+				quantity=quantity+Double.valueOf(cursor.getString(cursor.getColumnIndex(ActHistory.COLUMN_NAME_COSUME_QUANTITY)));
+			}
+			cursor.close();
+			return quantity;
+		}
+		
+		public void updateUserWeight(String weight)
+		{
+			
+			 //System.out.println("intered");
+			SQLiteDatabase db=this.getReadableDatabase();
+			db.execSQL("update User set weight ='"+weight+"' where UserID = 1");
+			
+		}
+		
+		
+		public List<String> monthRecord(String Year, String Month)
+		{
+			List<String> RecordList = new ArrayList();
+			SQLiteDatabase db=this.getReadableDatabase();
+			
+			//db.execSQL("insert into ActHistory values('1008','12/05/2013','12:12:32','69','3')");
+			
+			String sqlstr = "select substr("+ActHistory.COLUMN_NAME_DATE+",4,2) from "+ActHistory.TABLE_NAME+
+					" where substr("+ActHistory.COLUMN_NAME_DATE+",1,2) = ? and substr("+ActHistory.COLUMN_NAME_DATE+",7,4) = ? ";
+			sqlstr = sqlstr + " UNION ";
+			sqlstr = sqlstr + "select substr("+FoodHistory.COLUMN_NAME_DATE+",4,2) from "+FoodHistory.TABLE_NAME+
+			        " where substr("+FoodHistory.COLUMN_NAME_DATE+",1,2) = ? and substr("+FoodHistory.COLUMN_NAME_DATE+",7,4) = ?";	
+			
+		
+			
+					System.out.println(sqlstr);
+					Cursor cursor=db.rawQuery(sqlstr, new String[] {Month, Year, Month, Year});
+					
+					//System.out.println("step1");
+					//cursor.moveToFirst();
+					//System.out.println("step2");
+					//String Recordday = cursor.getString(0);
+					//System.out.println(Recordday);
+					//RecordList.add(cursor.getString(0));
+					//System.out.println(cursor.getString(0));
+					for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+					{
+						System.out.println("step3");
+						String Recordday = cursor.getString(0);
+						RecordList.add(cursor.getString(0));
+						System.out.println(Recordday);
+					} 
+					cursor.close();
+					
+		//	Cursor cursor=db.rawQuery("select "+ActHistory.COLUMN_NAME_COSUME_QUANTITY+" from "+ActHistory.TABLE_NAME+" where "+ActHistory.COLUMN_NAME_DATE+" = ? and "+ActHistory.COLUMN_NAME_ACT+" =?", new String[] { date,ActID});	
+			return RecordList;
+		}
+		
+       public HashMap<String, Double> foodByDate(String year, String month, String day)
+       {
+    	   HashMap<String, Double> foodMap = new HashMap();
+    	   SQLiteDatabase db=this.getReadableDatabase();
+    	   System.out.println("year:"+year+"month:"+month+"day:"+day);
+    	   String sqlstr = "select "+Foods.COLUMN_NAME_FOOD_NAME+","+FoodHistory.COLUMN_NAME_COSUME_QUANTITY+
+    			   " from "+Foods.TABLE_NAME+" join "+FoodHistory.TABLE_NAME+" on "+Foods.TABLE_NAME+"."+Foods.COLUMN_NAME_FOOD_ID+" = "+
+    			   FoodHistory.TABLE_NAME+"."+FoodHistory.COLUMN_NAME_FOOD+" where substr("+FoodHistory.COLUMN_NAME_DATE+",1,2) = ? and substr("+FoodHistory.COLUMN_NAME_DATE
+    			   +",7,4) = ? and substr("+FoodHistory.COLUMN_NAME_DATE+",4,2) = ?";
+    	   System.out.println(sqlstr);
+    	   Cursor cursor=db.rawQuery(sqlstr, new String[] { month, year, day});
+    		for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+			    String foodname = cursor.getString(0);
+			    System.out.println(foodname);
+			    String quantity = cursor.getString(1);
+			    System.out.println(quantity);
+			    if(!foodMap.containsKey(foodname))
+			{
+			    foodMap.put(foodname, Double.parseDouble(quantity));
+			}
+			    else
+			    {
+			    	double ex_quantity = foodMap.get(foodname);
+			    	foodMap.put(foodname, ex_quantity+Double.parseDouble(quantity));
+			    }
+			    
+			}
+			cursor.close();
+    	   
+    	   return foodMap;
+       }
+		
+
+		
+       public HashMap<String, Integer> activityByDate(String year, String month, String day)
+       {
+    	   HashMap<String, Integer> actMap = new HashMap();
+    	   SQLiteDatabase db=this.getReadableDatabase();
+    	   System.out.println("year:"+year+"month:"+month+"day:"+day);
+    	   String sqlstr = "select "+Activities.COLUMN_NAME_ACTIVITY_NAME+","+ActHistory.COLUMN_NAME_COSUME_QUANTITY+
+    			   " from "+Activities.TABLE_NAME+" join "+ActHistory.TABLE_NAME+" on "+Activities.TABLE_NAME+"."+Activities.COLUMN_NAME_ACTIVITY_ID+" = "+
+    			   ActHistory.TABLE_NAME+"."+ActHistory.COLUMN_NAME_ACT+" where substr("+ActHistory.COLUMN_NAME_DATE+",1,2) = ? and substr("+ActHistory.COLUMN_NAME_DATE
+    			   +",7,4) = ? and substr("+ActHistory.COLUMN_NAME_DATE+",4,2) = ?";
+    	   System.out.println(sqlstr);
+    	   Cursor cursor=db.rawQuery(sqlstr, new String[] { month, year, day});
+    		for(cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext())
+			{
+			    String actname = cursor.getString(0);
+			    System.out.println(actname);
+			    String quantity = cursor.getString(1);
+			    System.out.println(quantity);
+			    if(!actMap.containsKey(actname))
+			{
+			    actMap.put(actname, Integer.parseInt(quantity));
+			}
+			    else
+			    {
+			    	int ex_quantity = actMap.get(actname);
+			    	actMap.put(actname, ex_quantity+Integer.parseInt(quantity));
+			    }
+			    
+			}
+			cursor.close();
+    	   
+    	   return actMap;
+       }
+       
+		
+    }
+
+
+}
