@@ -1,0 +1,63 @@
+package com.example.fitness.analysis;
+
+import android.app.Activity;
+import android.content.Context;
+import dbModel.User;
+import dbModel.UserType;
+
+public class NutritionDemandCalculation {
+	
+	private Context context;
+	
+	double DailyCalorie = 0;
+	double DailyProtein = 0;
+	double DailyCarbohydrate = 0;
+
+	double Calorie = 0;
+	double Protein = 0;
+	double Carbohydrate = 0;
+	
+	double factor; 
+	double constant; 
+	double weight;
+	int duration = 0;
+	
+	AnalysisHelper helper = new AnalysisHelper(this.context);
+	
+	public NutritionDemandCalculation (Context Context){
+		context = Context;
+	}
+	
+	//calculate daily nutrition demand
+	private void DailyNutritionCalculation(){
+		
+		User user = helper.getUser();
+		UserType usertype = helper.getNutritionEquation(user);
+		
+		DailyCalorie = Double.valueOf(usertype.CalFactor) * Double.valueOf(user.weight) + Double.valueOf(usertype.CalConstant);
+		DailyProtein = DailyCalorie * Double.valueOf(usertype.Protein);
+		DailyCarbohydrate = DailyCalorie * Double.valueOf(usertype.Carbohydrate);
+		
+	}
+	
+	//calculate n days nutrition demand
+	private void MultidayNutritionCalculation(int n){
+		
+		DailyNutritionCalculation();
+		
+		Calorie = DailyCalorie * n;
+		Protein = DailyProtein * n;
+		Carbohydrate = DailyCarbohydrate * n;	
+		
+	}
+	
+	public double[] getMultidayNutritionDemand(int n){
+		
+		DailyNutritionCalculation();
+		MultidayNutritionCalculation(n);
+		
+		double[] result = {Calorie,Protein,Carbohydrate};
+		return result;
+		
+	} 
+}
