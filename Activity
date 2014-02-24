@@ -1,0 +1,9 @@
+package dbModel;
+
+public class Activity {
+	public String ActID;
+	public String ActName;
+	public String ActCal;
+	public String ActType;
+    
+}
