@@ -1,0 +1,10 @@
+package dbModel;
+
+public class FoodHistory {
+	public String FoodHistoryID;
+	public String Date;
+	public String Time;
+	public String FoodID;
+	public String FoodCal;
+	public String MealCategory;
+}
