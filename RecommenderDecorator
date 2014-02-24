@@ -1,0 +1,16 @@
+package recomm;
+
+import java.util.ArrayList;
+
+public abstract class RecommenderDecorator extends Recommender
+{
+	protected Recommender decoratee;
+	
+	public RecommenderDecorator(Recommender rec)
+	{
+		//constructor of subclass will firstly invoke the default constructor of super class
+		decoratee = rec;
+	}
+	
+	public abstract ArrayList<String> recommend();
+}
