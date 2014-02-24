@@ -1,0 +1,33 @@
+package com.example.fitness;
+
+import android.app.TabActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
+
+@SuppressWarnings("deprecation")
+public class CalcTab extends TabActivity{
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	        setContentView(R.layout.tab_layout);
+	        
+	        TabHost mTabHost = getTabHost();
+	        TabSpec takein_spec = mTabHost.newTabSpec("Take-In");
+	        takein_spec.setIndicator("Take-In");
+	        Intent takein_Intent = new Intent(this, Calc_take_in.class);
+	        takein_spec.setContent(takein_Intent);
+	 
+	        TabSpec workout_spec = mTabHost.newTabSpec("Work-Out");
+	        workout_spec.setIndicator("Work-Out");
+	        Intent workout_Intent = new Intent(this, Calc_work_out.class);
+	        workout_spec.setContent(workout_Intent);
+	        
+	        // Adding all TabSpec to TabHost
+	        
+	        mTabHost.addTab(takein_spec); // Adding take-in tab
+	        mTabHost.addTab(workout_spec); // Adding work-out tab
+	    }
+}
