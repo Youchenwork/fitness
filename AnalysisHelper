@@ -1,0 +1,265 @@
+package com.example.fitness.analysis;
+
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import database.dbContract;
+import database.dbCreation;
+import database.dbContract.FoodHistory;
+import database.dbContract.UserInfo;
+import database.dbContract.UserType;
+import database.dbCreation.DbHelper;
+import dbModel.User;
+
+public class AnalysisHelper extends DbHelper{
+
+	public AnalysisHelper(Context context) {
+		super(context);
+	}
+	
+	//nutrition history of the given duration
+	public List<EntityNutritionRecord> getMultidayNutritionHistory(int pIdf) {
+		
+
+		
+		HashMap<String,List<String>> durationDateMap = getMultidayList(pIdf);
+		List<EntityNutritionRecord> result = new ArrayList<EntityNutritionRecord>();
+		
+		for (Map.Entry<String,List<String>> entry : durationDateMap.entrySet()) {
+			
+			EntityNutritionRecord daily = new EntityNutritionRecord(entry.getKey());
+			double totalCal= 0;
+			double totalPrt= 0;
+			double totalCht= 0;
+			
+			for (int i = 0;i < entry.getValue().size();i++){
+				String id = entry.getValue().get(i);
+					if (entry.getValue().get(i) != null){
+					double qty = getFoodQuantity(entry.getKey(),entry.getValue().get(i));
+					double cal = Double.parseDouble(getFoodCal_ID(id))*qty;
+					double prt = Double.parseDouble(getFoodPrt_ID(id))*qty;
+					double cht = Double.parseDouble(getFoodCht_ID(id))*qty;
+					totalCal += cal;
+					totalPrt += prt;
+					totalCht += cht;
+					daily.putRecord(id, cal, prt, cht);
+					
+					daily.putTotal(totalCal,totalPrt,totalCht);
+					
+					System.out.println(id + "//" + Double.toString(cal));
+				}
+			}
+			result.add(daily);
+		}
+		
+		return result;
+	} 
+	
+	//get hashmap<date,foodlist> from given date to system date
+	public HashMap<String, List<String>> getMultidayList(int pIdf){
+		
+		SQLiteDatabase db = this.getWritableDatabase();
+		
+		//saving <date,food list> of given duration
+		HashMap<String,List<String>> durationDateMap = new HashMap<String,List<String>>();
+		
+		String[] date = new String[1];
+		Cursor cursor = null;
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat df = new SimpleDateFormat("MM");
+		switch(pIdf){
+			case 1:
+				cal.add(Calendar.DAY_OF_MONTH, -1);
+				date[0] = dateToString(cal.getTime());
+				cursor = db.rawQuery(
+				"SELECT distinct "+ dbContract.FoodHistory.COLUMN_NAME_DATE + " from " + FoodHistory.TABLE_NAME
+				+ " WHERE " + dbContract.FoodHistory.COLUMN_NAME_TIME + " = ?",date);
+				System.out.println("SELECT distinct "+ dbContract.FoodHistory.COLUMN_NAME_DATE + " from " + FoodHistory.TABLE_NAME
+						+ " WHERE " + dbContract.FoodHistory.COLUMN_NAME_DATE + " = \"" + date[0] + "\"");
+				break;
+			case 7:
+				date[0] = dateToString(cal.getTime());
+				cursor = db.rawQuery("SELECT distinct "+ dbContract.FoodHistory.COLUMN_NAME_DATE + " from " + FoodHistory.TABLE_NAME
+						+ " WHERE " + dbContract.FoodHistory.COLUMN_NAME_DATE + " = ?",date);
+				break;
+			case 30:
+				date[0] = df.format(cal.getTime());
+				cursor = db.rawQuery(
+				"SELECT distinct "+ dbContract.FoodHistory.COLUMN_NAME_DATE + " from " + FoodHistory.TABLE_NAME
+				+ " WHERE substr(" + dbContract.FoodHistory.COLUMN_NAME_DATE + ",1,2) = ?",date);
+				break;
+				
+		}
+			cursor.moveToFirst();
+		
+		String tmp_date;
+		List tmp_food;
+		while (cursor.moveToNext()){
+			tmp_date = cursor.getString(cursor.getColumnIndex(dbContract.FoodHistory.COLUMN_NAME_DATE));
+			tmp_food = getFoodID(tmp_date);
+			System.out.println(tmp_date +"////" +getFoodName((String) tmp_food.get(0)));
+			durationDateMap.put(tmp_date,tmp_food);			
+		}
+		
+		cursor.close();
+		db.close();
+		return durationDateMap;
+	}
+	
+	//************************************
+	//********date relate function********
+	//************************************
+	
+	public String getCurrentDate() {
+//		System.out.println(dateToString(Calendar.getInstance().getTime()));
+		return dateToString(Calendar.getInstance().getTime());
+	}
+	
+	public String getStartDate (int Idf){
+//		System.out.println(Integer.toString(Idf));
+		Calendar cal = Calendar.getInstance();
+		switch (Idf)
+		{
+			case 1 :
+				cal.add(Calendar.DATE,-1);
+				break;
+			case 7 :
+				cal.add(Calendar.DATE,-7);
+				break;
+			case 30 :
+				cal.add(Calendar.DATE,-30);
+				break;
+		}
+		return dateToString(cal.getTime());
+	}
+	
+	private String dateToString(Date date){
+		SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+		String formattedDate = df.format(date);
+//		System.out.println(formattedDate);
+		
+		return formattedDate;
+		
+	}
+	
+	
+	
+	//************************************
+	//********user relate function********
+	//************************************
+	
+	public User getUser(){
+
+		SQLiteDatabase db = this.getReadableDatabase();	
+		Cursor cursor = db.rawQuery("select * from " + UserInfo.TABLE_NAME,null);
+		
+		dbModel.User user = new dbModel.User(cursor);
+			
+		return user;
+	}
+	
+	public dbModel.UserType getNutritionEquation(dbModel.User user){
+
+		String agebottom = null;
+		String agetop = null;
+					
+		String[] agerange = getUserAgeRange();
+		
+		agebottom = agerange[0];
+		agetop = agerange[1];
+		
+		String[] userdata = {user.sex,agebottom,agetop};
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.rawQuery("select * from" + UserType.TABLE_NAME + "where Sex = ? and AgeTop = ? and AgeBottom = ? " ,userdata );
+		cursor.moveToFirst();
+		
+		dbModel.UserType usertype = new dbModel.UserType(cursor);
+		
+		return usertype;
+	}
+	
+	public String getUserSex(){
+		
+		String UserSex = null;
+		
+		SQLiteDatabase db=this.getReadableDatabase();
+		Cursor cursor = db.rawQuery("select " +UserInfo.COLUMN_NAME_SEX + "from " + UserInfo.TABLE_NAME,null);
+		cursor.moveToFirst();
+		
+		UserSex = cursor.getString(cursor.getColumnIndex(UserInfo.COLUMN_NAME_SEX));
+		cursor.close();
+		
+		return UserSex;
+	}
+	
+
+	public int getUserAge(){
+		
+		String UserBirth = null;
+					
+		SQLiteDatabase db=this.getReadableDatabase();
+		Cursor cursor = db.rawQuery("select " +UserInfo.COLUMN_NAME_BIRTH + "from " + UserInfo.TABLE_NAME,null);
+		cursor.moveToFirst();
+		
+		UserBirth = cursor.getString(cursor.getColumnIndex(UserInfo.COLUMN_NAME_BIRTH));
+		String BirthYear = UserBirth.substring(6,10);
+		String Year = java.text.DateFormat.getDateInstance().format(Calendar.YEAR);
+		
+		int Age = Integer.parseInt(Year) - Integer.parseInt(BirthYear);
+		
+		cursor.close();
+		return Age;
+	}
+	
+	//return {user age range bottom, user age range top} used in nutrition equation
+	public String[] getUserAgeRange(){
+		
+		int age = getUserAge();
+		int agebottom = -1;
+		int agetop = -1;
+		int[] agerange = {61,31,19,11,4,1};
+		
+		for (int i = 1;i<= agerange.length;i++) {
+			
+			if (age>agerange[i]) {
+			
+				agebottom = agerange[i];
+				break;
+				
+			}
+		}
+		
+		switch (agebottom){
+			
+			case 1: agetop = 3;
+				break;
+			case 4: agetop = 10;
+				break;
+			case 11: agetop = 18;
+				break;
+			case 19: agetop = 30;
+				break;
+			case 31: agetop = 60;
+				break;
+			case 61: agetop = 99;
+				break;
+			default: agetop = -1;
+		}
+		
+		String[] AgeRangeString = {String.valueOf(agebottom),String.valueOf(agetop)};
+		
+		return AgeRangeString;		
+	}
+
+	
+}
