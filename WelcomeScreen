@@ -1,0 +1,62 @@
+package com.example.fitness;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class WelcomeScreen extends Activity implements OnClickListener{
+	Button calorieCalculator_btn;
+	Button personalRecord_btn;
+	//Button analysis_report_btn;
+	Button analysis_btn;
+	Intent nextActivity;
+	TextView welcome_text;
+	
+	//initiate UI components
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.welcome_screen);
+		
+		calorieCalculator_btn = (Button) findViewById(R.id.calorieCalculator_btn);
+		personalRecord_btn = (Button) findViewById(R.id.personalRecord_btn);
+		//analysis_report_btn = (Button) findViewById(R.id.analysis_report_btn);
+		analysis_btn = (Button) findViewById(R.id.analysis_btn);
+		calorieCalculator_btn.setOnClickListener(this);
+		personalRecord_btn.setOnClickListener(this);
+		//analysis_report_btn.setOnClickListener(this);
+		analysis_btn.setOnClickListener(this);
+		
+		welcome_text = (TextView) findViewById(R.id.welcome_text);
+		welcome_text.setText("Welcome, "+this.getIntent().getExtras().getString("UserName"));
+	}
+	
+	//set button onclick listener
+	public void onClick(View btn_view) {
+		System.out.println(btn_view.getId());
+		switch (btn_view.getId()) {
+        case R.id.calorieCalculator_btn:
+        	nextActivity = new Intent(WelcomeScreen.this, CalcTab.class);
+        	startActivity(nextActivity);
+            break;
+        case R.id.personalRecord_btn:
+        	nextActivity = new Intent(WelcomeScreen.this, PersonalRecord_CalendarView.class);
+        	startActivity(nextActivity);
+            break;
+//        case R.id.analysis_report_btn:
+//        	nextActivity = new Intent(WelcomeScreen.this, analysis_report.class);
+//        	startActivity(nextActivity); 
+//            break;
+        case R.id.analysis_btn:
+        	nextActivity = new Intent(WelcomeScreen.this, AnalTab.class);
+        	startActivity(nextActivity);
+            break; 
+        default:
+            break;
+        }
+    }	
+}
