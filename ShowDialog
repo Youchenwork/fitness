@@ -1,0 +1,85 @@
+package com.example.fitness;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import database.dbCreation;
+import database.dbCreation.DbHelper;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TabHost;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
+
+public class ShowDialog extends Activity {
+	//pass formatted calorie report using "Calc_takein"
+	
+	
+	//Button save_weight_btn;
+	//Button dismiss_btn;
+		public void show_dialog(Context context, String result, String title)
+		{
+			final Context cur_context = context;
+			final Dialog dialog = new Dialog(cur_context);
+			dialog.setContentView(R.layout.calorie_report);
+			dialog.setTitle(title);
+
+			// set the custom dialog components - text, image and button
+			TextView calorie_report_text = (TextView) dialog.findViewById(R.id.calorie_report_text);
+			calorie_report_text.setText(result);
+			TextView weigh_in_text = (TextView) dialog.findViewById(R.id.weigh_in_text);
+			final EditText weight_input = (EditText)dialog.findViewById(R.id.weight_input);
+			Button	save_weight_btn = (Button) dialog.findViewById(R.id.save_weight_btn);
+			//dbCreation.DbHelper db = new dbCreation.DbHelper(this);
+			
+			save_weight_btn.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(weight_input.getText().toString().trim().length() != 0)
+					{
+						//save "weight" and "cur_date" to database
+						dialog.dismiss();
+						double weight = Double.parseDouble(weight_input.getText().toString().trim());
+						//SimpleDateFormat df = new SimpleDateFormat("mm/dd/yyyy");
+						//String cur_date = df.format(Calendar.getInstance().getTime());
+						
+						//System.out.println(weight+"  "+cur_date);
+						dbCreation.DbHelper db = new dbCreation.DbHelper(cur_context);
+						db.updateUserWeight(weight_input.getText().toString().trim());
+					}
+					else
+						Toast.makeText(cur_context, "Please enter your weight.", Toast.LENGTH_SHORT).show();
+				}
+			});
+			
+			Button dismiss_btn = (Button) dialog.findViewById(R.id.dismiss_btn);
+	
+			dismiss_btn.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					dialog.dismiss();
+				}
+			});
+			
+		
+			dialog.show();
+		}
+		
+		/*public void onClick() {
+			switch(arg0.getId()){
+			case R.id.save_weight_btn:
+				String weight = weight_input.getText().toString().trim()
+				
+				
+			}
+*/
+}
+		
+		
