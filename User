@@ -1,0 +1,33 @@
+package dbModel;
+
+import android.database.Cursor;
+
+public class User {
+	public String UserID;
+	public String UserName;
+	public String Email;
+	public String Birth;
+	public String sex;
+	public String height;
+	public String weight;
+	public String fitnessChoice;
+	
+	public User(){
+		
+	}
+	
+	public User(Cursor cursor){
+		
+		this.UserID = cursor.getString(cursor.getColumnIndex("UserID"));
+		this.UserName = cursor.getString(cursor.getColumnIndex("UserName"));	
+		this.Email = cursor.getString(cursor.getColumnIndex("Email"));	
+		this.Birth = cursor.getString(cursor.getColumnIndex("Birth"));	
+		this.sex = cursor.getString(cursor.getColumnIndex("sex"));	
+		this.height = cursor.getString(cursor.getColumnIndex("height"));	
+		this.weight = cursor.getString(cursor.getColumnIndex("weight"));	
+		this.fitnessChoice = cursor.getString(cursor.getColumnIndex("fitnessChoice"));	
+
+	}
+	
+	
+}
