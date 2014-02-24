@@ -1,0 +1,72 @@
+package database;
+
+import android.provider.BaseColumns;
+
+public final class dbContract {
+	
+	public dbContract(){}
+	
+	public static abstract class Activities implements BaseColumns{
+		public static final String TABLE_NAME="Activity";
+		public static final String COLUMN_NAME_ACTIVITY_ID="actID";
+		public static final String COLUMN_NAME_ACTIVITY_NAME="actName";
+		public static final String COLUMN_NAME_UNIT_CAL="unitCal";
+		public static final String COLUMN_NAME_ACTIVITY_TYPE="actType";
+	}
+	
+	public static abstract class Foods implements BaseColumns{
+		public static final String TABLE_NAME="Food";
+		public static final String COLUMN_NAME_FOOD_ID="foodID";
+		public static final String COLUMN_NAME_FOOD_NAME="foodName";
+		public static final String COLUMN_NAME_UNIT="unit";
+		public static final String COLUMN_NAME_UNIT_CAL="unitCal";
+		public static final String COLUMN_NAME_CARBOHYDRATE="Catbohydrate";
+		public static final String COLUMN_NAME_PROTEIN="Protein";
+		public static final String COLUMN_NAME_CATEGORY="foodCategory";
+	}
+	
+	public static abstract class UserInfo implements BaseColumns{
+		public static final String TABLE_NAME="User";
+		public static final String COLUMN_NAME_USER_ID="UserID";
+		public static final String COLUMN_NAME_USER_NAME="UserName";
+		public static final String COLUMN_NAME_EMAIL="emailAddr";
+		public static final String COLUMN_NAME_BIRTH="birthDate";
+		public static final String COLUMN_NAME_SEX="sex";
+		public static final String COLUMN_NAME_HEIGHT="height";
+		public static final String COLUMN_NAME_WEIGHT="weight";
+		public static final String COLUMN_NAME_FITNESS_CHOICE="choice";
+	}
+	
+	public static abstract class FoodHistory implements BaseColumns{
+		public static final String TABLE_NAME="FoodHistory";
+		public static final String COLUMN_NAME_FOOD_HISTORY_ID="FoodHistoryID";
+		public static final String COLUMN_NAME_DATE="date";
+		public static final String COLUMN_NAME_TIME="time";
+		public static final String COLUMN_NAME_FOOD="foodID";
+		public static final String COLUMN_NAME_COSUME_QUANTITY="quantity";
+		public static final String COLUM_NAME_MEALCATEGORY="mealCategory";
+	}
+
+	
+	public static abstract class ActHistory implements BaseColumns{
+		public static final String TABLE_NAME="ActHistory";
+		public static final String COLUMN_NAME_ACT_HISTORY_ID="ActHistoryID";
+		public static final String COLUMN_NAME_DATE="date";
+		public static final String COLUMN_NAME_TIME="time";
+		public static final String COLUMN_NAME_ACT="ActID";
+		public static final String COLUMN_NAME_COSUME_QUANTITY="quantity";
+	}
+	
+	public static abstract class UserType implements BaseColumns{
+		public static final String TABLE_NAME="UserType";
+		public static final String COLUMN_NAME_TYPE="TYPE";
+		public static final String COLUMN_NAME_SEX="SEX";
+		public static final String COLUMN_NAME_AGETOP="AGETOP";
+		public static final String COLUMN_NAME_AGEBOTTOM="AGEBOTTOM";
+		public static final String COLUMN_NAME_CALFACTOR="CALFactor";
+		public static final String COLUMN_NAME_CALCONSTANT="CALCONSTANT";
+		public static final String COLUMN_NAME_CH="carbohytrate";
+		public static final String COLUMN_NAME_PROTEIN="protein";
+	}
+
+}
