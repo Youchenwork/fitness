@@ -1,0 +1,358 @@
+package com.example.fitness;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+
+import calculator.Calculator;
+
+import database.dbCreation;
+import database.dbCreation.DbHelper;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TabHost;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class Calc_take_in extends Activity implements OnItemSelectedListener, OnClickListener{
+	//sample data used to populate spinners
+	
+	
+	 String[] Meal = {"Select a meal","Breakfast","Lunch","Dinner", "Snack"};
+	 dbCreation.DbHelper db = new dbCreation.DbHelper(this);
+	 
+	 String[] FoodCategory;
+	 
+	// String[] FoodCategory = {"Select a food category", "Meat","Vegetables"};
+	 String[] Food = {"Select an item"};
+	 String[] Category_food;
+	 //String foodUnit;
+	 //String[] Meat = {"Select an item","Pork","Beef"};
+	 //String[] Vegetables = {"Select an item","Cabbage","Lettuce"};
+	 Spinner meal_spn;
+	 Spinner food_category_spn;
+	 Spinner food_spn;
+	 ArrayAdapter<String> food_adapter;
+	 ArrayAdapter<String> meal_adapter;
+	 ArrayAdapter<String> food_category_adapter;
+	 TextView qty_unit;
+	 Button add_item;
+	 Button view_result;
+	 Button menu_btn1;
+	 Button menu_btn2;
+	 //Button menu_btn3;
+	 EditText qty_input;
+	 Toast additem_toast;
+     Intent nextActivity;
+	 ShowDialog show_dialog;
+	 HashMap<String, Double> breakfast_hm = new HashMap<String, Double>();
+	 HashMap<String, Double> lunch_hm = new HashMap<String, Double>();
+	 HashMap<String, Double> dinner_hm = new HashMap<String, Double>();
+	 HashMap<String, Double> snack_hm = new HashMap<String, Double>();
+	 
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.calc_take_in);
+		
+		add_item = (Button) findViewById(R.id.add_item);
+		add_item.setOnClickListener(this);
+		view_result = (Button) findViewById(R.id.view_result);
+		view_result.setOnClickListener(this);
+		qty_unit = (TextView) findViewById(R.id.qty_unit);
+		qty_input = (EditText) findViewById(R.id.qty_input);
+		qty_input.setEnabled(false);
+		qty_input.setFocusable(false);
+		
+		menu_btn1 = (Button)findViewById(R.id.menu_btn1);
+		menu_btn2 = (Button)findViewById(R.id.menu_btn2);
+		//menu_btn3 = (Button)findViewById(R.id.menu_btn3);
+		menu_btn1.setOnClickListener(this);
+		menu_btn2.setOnClickListener(this);
+		//menu_btn3.setOnClickListener(this);
+		menu_btn1.setText("Personal Record");
+		menu_btn2.setText("Analysis");
+		//menu_btn3.setText("Health Chart");
+		
+		meal_spn = (Spinner)findViewById(R.id.meal_spn);
+		meal_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, Meal);
+		meal_spn.setAdapter(meal_adapter);
+		meal_spn.setOnItemSelectedListener(this);
+		
+		//create category list
+		
+		List<String> CategoryList = db.getCategory();
+		
+		ArrayList Array_CategoryList = new ArrayList(CategoryList);
+		int Categorynum = Array_CategoryList.size();
+		FoodCategory = new String[Categorynum+1];
+        
+		FoodCategory[0] = "Select a food category";
+		for(int i =0; i<Array_CategoryList.size();i++)
+		{
+			FoodCategory[i+1] = Array_CategoryList.get(i).toString();
+		}
+		
+	
+		
+		food_category_spn = (Spinner)findViewById(R.id.food_category_spn);
+		food_category_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, FoodCategory);
+		food_category_spn.setEnabled(false);
+		food_category_spn.setClickable(false);
+		food_category_spn.setAdapter(food_category_adapter);
+		food_category_spn.setOnItemSelectedListener(this);
+		
+		food_spn = (Spinner)findViewById(R.id.food_spn);
+		food_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, Food);
+		food_spn.setEnabled(false);
+		food_spn.setClickable(false);
+		food_spn.setAdapter(food_adapter);
+		food_spn.setOnItemSelectedListener(this);
+	}
+
+	@Override
+	//arg0 is adapterID, arg1 is viewID, arg2 is the position of selected item, arg3 is its ID
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		 switch(arg0.getId()){
+		 	case R.id.meal_spn:
+		 		if(arg2 != 0)
+		 		{
+		 			food_category_spn.setEnabled(true);
+		 			food_category_spn.setClickable(true);
+		 			food_category_spn.setAdapter(food_category_adapter);
+		 		}
+		 		else
+		 		{
+		 			food_category_spn.setEnabled(false);
+		 			food_category_spn.setClickable(false);
+		 			food_category_spn.setAdapter(food_category_adapter);
+		 			food_spn.setEnabled(false);
+	        		food_spn.setClickable(false);
+	        		food_spn.setAdapter(food_adapter);
+		 		}
+		 		break;
+	        case R.id.food_category_spn:
+	        	System.out.println(food_category_spn.getSelectedItem().toString());
+	        	if(arg2 == 0)
+	        	{
+	        		food_spn.setEnabled(false);
+	        		food_spn.setClickable(false);
+	        		food_spn.setAdapter(food_adapter);
+	        	}
+	        	//one if statement per category, replace "Meat", "Vegetables" with the data obtained from database.
+	        	//make a query to database based on selected category, food_spn.getSelectedItem() gives you the category
+	        	//grab all food items under this category,
+        		//store in a string[], then update spinner
+	        	else
+	        	{
+	        		List<String> Category_Foodnamelist = db.getFoodName(food_category_spn.getSelectedItem().toString());
+	        		//List<String> Category_Foodnamelist = db.getFoodName("CAKE");
+	        		ArrayList Array_FoodList = new ArrayList(Category_Foodnamelist);
+	        		int Foodnum = Array_FoodList.size();
+	        		Category_food = new String[Foodnum+1];
+	                
+	        		Category_food[0] = "Select a food";
+	        		for(int i =0; i<Array_FoodList.size();i++)
+	        		{
+	        			Category_food[i+1] = Array_FoodList.get(i).toString();
+	        		}
+	        		
+	        		food_adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item, Category_food);
+	        		food_spn.setEnabled(true);
+	        		food_spn.setClickable(true);
+	        		food_spn.setAdapter(food_adapter);
+	    
+	        	}	
+	            break;
+	        case R.id.food_spn:
+	        	//make a query to database, food_spn.getSelectedItem() gives you the food, 
+	        	//get the unit it uses to calculate calorie, such as lbs, g, kg,
+	        	//and replace qty_unit_arr[arg2] with your query result, in the textview
+	        	if(arg2 != 0){
+	        		
+	        		//List<String> UnitList = db.getunit(food_spn.getSelectedItem().toString());
+	        		String foodunit = db.getunit(food_spn.getSelectedItem().toString());
+	        		
+	        		//String foodUnit = Array_UnitList.get(0).toString();
+	        		
+	        		
+	        	//System.out.println(food_spn.getSelectedItem());
+	        	qty_input.setEnabled(true);
+	        	qty_input.setFocusableInTouchMode(true);
+	        	//String[] qty_unit_arr = {"unit","lbs","g","liter"};
+	        	
+	        	//System.out.println(qty_unit_arr[arg2]);
+	    		qty_unit.setText(foodunit);
+	        	}
+	        	if(arg2 == 0)
+	        	{
+	        		qty_input.setEnabled(false);
+	        		qty_input.setFocusable(false);
+	        		qty_unit.setText("");
+	        	}
+	    		break;	        	
+	    }
+		
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		switch(arg0.getId()){
+		case R.id.add_item:
+			if(qty_input.getText().toString().trim().length() != 0)
+			{
+				switch(meal_spn.getSelectedItemPosition()){
+				case 1:
+					breakfast_hm.put(food_spn.getSelectedItem().toString(), Double.parseDouble(qty_input.getText().toString().trim()));
+				    String id_breakfast = db.getFoodId(food_spn.getSelectedItem().toString());
+				    db.FoodHistoryInsert(id_breakfast, qty_input.getText().toString().trim(), "breakfast");
+				    
+					break;
+				case 2:
+					lunch_hm.put(food_spn.getSelectedItem().toString(), Double.parseDouble(qty_input.getText().toString().trim()));
+				    String id_lunch = db.getFoodId(food_spn.getSelectedItem().toString());
+				    db.FoodHistoryInsert(id_lunch, qty_input.getText().toString().trim(), "lunch");
+					break;
+				case 3:
+					dinner_hm.put(food_spn.getSelectedItem().toString(), Double.parseDouble(qty_input.getText().toString().trim()));
+					 String id_dinner = db.getFoodId(food_spn.getSelectedItem().toString());
+					 db.FoodHistoryInsert(id_dinner, qty_input.getText().toString().trim(), "dinner");
+					break;
+				case 4:
+					snack_hm.put(food_spn.getSelectedItem().toString(), Double.parseDouble(qty_input.getText().toString().trim()));
+					 String id_snack = db.getFoodId(food_spn.getSelectedItem().toString());
+					 db.FoodHistoryInsert(id_snack, qty_input.getText().toString().trim(), "snack");
+					break;
+				}
+				//check all data in the current hashmap
+//				for(Entry<String, Double> entry: breakfast_hm.entrySet()) {
+//			        System.out.println(entry.getKey());
+//			        System.out.println(entry.getValue());
+//			    }
+				Toast.makeText(getApplicationContext(), "Added an item to "+meal_spn.getSelectedItem(), Toast.LENGTH_SHORT).show();
+			}
+			else
+				Toast.makeText(getApplicationContext(), "Please fill out all fields.", Toast.LENGTH_SHORT).show();
+			break;
+		case R.id.view_result:
+			if(breakfast_hm.isEmpty() && lunch_hm.isEmpty() && dinner_hm.isEmpty() && snack_hm.isEmpty())
+				Toast.makeText(getApplicationContext(), "Sorry, you haven't entered any data yet.", Toast.LENGTH_SHORT).show();
+			else
+			{
+				Calculator calculator = new Calculator(this);
+				//Retrieve information from hashmap and calculate calorie, pass result to show_dialog(result),
+				//depending on how the report looks like
+				double cal_Breakfast =0;
+				double cal_Lunch =0;
+				double cal_Dinner =0;
+				double cal_Snack = 0;
+				
+				
+				String result ="";
+				if(breakfast_hm.isEmpty()==false)
+				{
+					cal_Breakfast = calculator.foodIntake_Calc(breakfast_hm);
+					
+					result+= "Breakfast:"+Double.toString(cal_Breakfast)+";";
+					//result += calculator.test();
+				}
+				
+				if(lunch_hm.isEmpty()==false)
+				{
+					cal_Lunch = calculator.foodIntake_Calc(lunch_hm);
+					result+= "Lunch:"+Double.toString(cal_Lunch)+";";
+				}
+				
+				if(dinner_hm.isEmpty()==false)
+				{
+					cal_Dinner = calculator.foodIntake_Calc(dinner_hm);
+					result+= "Dinner:"+Double.toString(cal_Dinner)+";";
+				}
+				
+				if(snack_hm.isEmpty()==false)
+				{
+					cal_Snack = calculator.foodIntake_Calc(snack_hm);
+					result+= "Snack:"+Double.toString(cal_Snack)+";";
+				}
+				
+			      
+				//result = "Breakfast: 200 cal, Lunch: 800 cal, Dinner: 600 cal";
+				show_dialog = new ShowDialog();
+				show_dialog.show_dialog(this,result,"Take-in Calorie");
+				//switch to work-out calorie tab
+				TabHost tabHost =  (TabHost) getParent().findViewById(android.R.id.tabhost);
+	            tabHost.setCurrentTab(1);  
+			}
+			break;
+		case R.id.menu_btn1:
+        	nextActivity = new Intent(Calc_take_in.this, PersonalRecord_CalendarView.class);
+        	startActivity(nextActivity);
+            break;
+        case R.id.menu_btn2:
+        	nextActivity = new Intent(Calc_take_in.this, AnalTab.class);
+        	startActivity(nextActivity); 
+            break;
+//        case R.id.menu_btn3:
+//        	nextActivity = new Intent(Calc_take_in.this, AnalysisReportActivity.class);
+//        	startActivity(nextActivity);
+//            break; 
+        default:
+            break;
+		}
+	}
+	
+//	public class MyAdapter extends ArrayAdapter<String>{
+//		
+//		public MyAdapter(Context context, int textViewResourceId,   String[] objects) {
+//            super(context, textViewResourceId, objects);
+//        }
+//        
+//		@Override
+//        public View getDropDownView(int position, View convertView,ViewGroup parent) {
+//            return getCustomView(position, convertView, parent);
+//        }
+//
+//        @Override
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            return getCustomView(position, convertView, parent);
+//        }
+//
+//        public View getCustomView(int position, View convertView, ViewGroup parent) {
+//
+//            LayoutInflater inflater=getLayoutInflater();
+//            View row=inflater.inflate(R.layout.nice_spinner, parent, false);
+//            TextView meal=(TextView)row.findViewById(R.id.spinner);
+//            meal.setText(Meal[position]);
+//            return row;
+//            }
+//        }
+}
