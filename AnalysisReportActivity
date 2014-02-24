@@ -1,0 +1,241 @@
+package com.example.fitness;
+
+import java.util.Iterator;
+import java.util.List;
+
+import com.example.fitness.analysis.AnalysisHelper;
+import com.example.fitness.analysis.EntityNutritionRecord;
+import com.example.fitness.analysis.NutritionStat;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class AnalysisReportActivity extends Activity implements OnClickListener{
+	TextView analysis_report_text;
+	TextView ar_content;
+	Button menu_btn1;
+	Button menu_btn2;
+	Button view_chart_btn;
+	//Button menu_btn3;
+	Intent nextActivity;
+	
+	public double avgCal;
+	public double maxCal;
+	public String maxCalDate;
+	public double minCal;
+	public String minCalDate;
+	public double avgPrt;
+	public double maxPrt;
+	public String maxPrtDate;
+	public double minPrt;
+	public String minPrtDate;	
+	public double avgCht;
+	public double maxCht;
+	public String maxChtDate;
+	public double minCht;
+	public String minChtDate;
+	
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_analysis_report);
+		menu_btn1 = (Button)findViewById(R.id.menu_btn1);
+		menu_btn2 = (Button)findViewById(R.id.menu_btn2);
+		view_chart_btn = (Button)findViewById(R.id.view_chart_btn);
+		menu_btn1.setOnClickListener(this);
+		menu_btn2.setOnClickListener(this);
+		view_chart_btn.setOnClickListener(this);
+		menu_btn1.setText("Calorie Calculator");
+		menu_btn2.setText("Personal Record");
+		view_chart_btn.setText("View Analysis Chart");
+		ar_content = (TextView)findViewById(R.id.ar_content);
+		analysis_report_text = (TextView)findViewById(R.id.ar_content_text);
+		AnalysisHelper helper = new AnalysisHelper(this);
+		
+		/*generate report*/
+
+		String type = this.getIntent().getExtras().getString("Report Type");
+		String period = this.getIntent().getExtras().getString("Period");
+		int pIdf;
+		int tIdf;
+		
+		//genText
+		String line1 = type + "  " + period + "\n";
+		String line2 = "average calorie intake: \n";
+		String line3 = "\n";
+		String line4 = "maxium calorie intake: \n";
+		String line5 = "\n";
+		String line6 = "happened on: \n";
+		String line7 = "\n";
+		String line8 = "minium calorie intake: \n";
+		String line9 = "\n";
+		String line10 = "happened on: \n";
+		String line11 = "\n";
+		
+		//set report type & period
+		if (type.equals("Calorie Report")){
+			tIdf = 1;
+		} else if (type.equals("Protein Report")){
+			tIdf = 2;
+		} else {
+			tIdf = 3;
+		}
+		
+		if (period.equals("for past 1 day")){
+			pIdf = 1; 
+		} else if (period.equals("for past 1 week")){
+			pIdf = 7;
+		} else {
+			pIdf = 30;
+		}
+
+		System.out.println("t&p: " + type + " " + period);
+		//process data from startDate to currentDate
+//		String startDate = helper.getStartDate(pIdf);
+		calcStat(helper.getMultidayNutritionHistory(pIdf));
+		
+		//----------------
+		//-hard code part-
+		//----------------
+		
+		
+		
+		
+		//select required data based on report type
+		System.out.println("Idf: " + tIdf + " " + pIdf);
+		switch (tIdf){
+			case 1:
+				System.out.println("avgCal:" + Double.toString(avgCal));
+				line3 = Double.toString(avgCal) + " \n";
+				System.out.println("avgCal:" + line3);
+				System.out.println("avgCal:" + Double.toString(avgCal));
+				line5 = Double.toString(maxCal) + " \n";
+				line7 = maxCalDate + " \n";
+				line9 = Double.toString(minCal) + " \n";
+				line11 = minCalDate + " \n";
+				break;
+			case 2:
+				System.out.println("er2");
+				line3 = Double.toString(avgPrt) + " \n";
+				line5 = Double.toString(maxPrt) + " \n";
+				line7 = maxPrtDate + " \n";
+				line9 = Double.toString(minPrt) + " \n";
+				line11 = minPrtDate + "\n";
+				break;
+			case 3:
+				System.out.println("er3");
+				line3 = Double.toString(avgCht) + " \n";
+				line5 = Double.toString(maxCht) + " \n";
+				line7 = maxChtDate +  " \n";
+				line9 = Double.toString(minCht) + " \n";
+				line11 = minChtDate + " \n";
+				break;
+		}
+		
+		if(pIdf == 1){
+			line5 ="N/A" + "\n";
+			line7 ="N/A" + "\n";
+			line9 ="N/A" + "\n";
+			line11 ="N/A" + "\n";
+			
+		}
+		
+		
+		
+		//print report content
+		ar_content.setText(line1+line2+line3+line4+line5+line6+line7+line8 + line9 + line10 + line11);
+		
+
+		
+		
+		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.analysis_report, menu);
+		return true;
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+        case R.id.menu_btn1:
+        	nextActivity = new Intent(AnalysisReportActivity.this, CalcTab.class);
+        	startActivity(nextActivity);
+            break;
+        case R.id.menu_btn2:
+        	nextActivity = new Intent(AnalysisReportActivity.this, PersonalRecord_CalendarView.class);
+        	startActivity(nextActivity); 
+            break;
+        case R.id.view_chart_btn:
+        	nextActivity = new Intent(AnalysisReportActivity.this, ChartAnalysisActivity.class);
+        	startActivity(nextActivity);
+            break; 
+        default:
+            break;
+        }		
+	}
+	
+	private void calcStat(List<EntityNutritionRecord> h){
+		Iterator it = h.iterator();
+		int n = 1;
+		
+		//initial
+		if (it.hasNext()){
+			EntityNutritionRecord start = (EntityNutritionRecord) it.next();
+			avgCal =minCal = maxCal = start.dailyTotalCal;
+			avgPrt =minPrt = maxPrt = start.dailyTotalPrt;
+			avgCht =minCht = maxCht = start.dailyTotalCht;
+			maxCalDate = minCalDate = maxPrtDate = minPrtDate = maxChtDate = minChtDate = start.date;
+		}
+		
+		//loop data
+		while(it.hasNext()){
+			
+			EntityNutritionRecord tmp = (EntityNutritionRecord) it.next();
+			System.out.println(Double.toString(avgCal));
+			System.out.println(Double.toString(tmp.dailyTotalCal));
+			System.out.println(Integer.toString(n));
+			avgCal = ((avgCal*n)+tmp.dailyTotalCal)/(n+1);
+			avgPrt = ((avgCal*n)+tmp.dailyTotalPrt)/(n+1);
+			avgCht = ((avgCal*n)+tmp.dailyTotalCht)/(n+1);
+			System.out.println(Double.toString(avgCal));			
+			if(tmp.dailyTotalCal > maxCal) {
+				maxCal = tmp.dailyTotalCal;
+				maxCalDate = tmp.date;
+			} else if(tmp.dailyTotalCal < minCal) {
+				minCal = tmp.dailyTotalCal;
+				minCalDate = tmp.date;
+			}
+			
+			if(tmp.dailyTotalPrt > maxPrt) {
+				maxPrt = tmp.dailyTotalPrt;
+				maxPrtDate = tmp.date;
+			} else if(tmp.dailyTotalPrt < minPrt) {
+				minPrt = tmp.dailyTotalPrt;
+				minPrtDate = tmp.date;
+			}
+			
+			if(tmp.dailyTotalCht > maxCht) {
+				maxCht = tmp.dailyTotalCht;
+				maxChtDate = tmp.date;
+			} else if(tmp.dailyTotalCht < minCht) {
+				minCht = tmp.dailyTotalCht;
+				minChtDate = tmp.date;
+			}
+			
+			n = n+1;
+		}
+	}
+	
+}
