@@ -1,0 +1,9 @@
+package dbModel;
+
+public class ActHistory {
+	public String ActHistoryID;
+	public String Date;
+	public String Time;
+	public String ActIDl;
+	public String ActCal;
+}
