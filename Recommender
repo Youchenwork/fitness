@@ -1,0 +1,129 @@
+package recomm;
+
+import java.util.ArrayList;
+import  android.content.Context;
+import java.util.List;
+import java.util.Hashtable;
+import database.dbCreation;
+
+public class Recommender
+{
+	private List<dbModel.Activity> acts;
+	private int timeLimit;
+	private int calorie;
+	protected ArrayList<Hashtable<String, Integer>> recommended;
+	private Context context;
+	
+	public Recommender ()
+	{
+		calorie = 500;
+		timeLimit = 10;
+		context = null;
+	}
+	public Recommender(int cal, int t, Context c)
+	{
+		timeLimit = t;
+		calorie = cal;
+		context = c;
+		
+		dbCreation.DbHelper db = new dbCreation.DbHelper(context);
+		acts = db.getAct();
+	}
+	
+	public ArrayList<String> recommend()
+	{
+		if (calorie <= 0 || timeLimit <= 0)
+			return null;
+		
+		Hashtable<String, Integer> curr = new Hashtable<String, Integer>();
+		recommended = new ArrayList<Hashtable<String, Integer>>();
+		//search(calorie, timeLimit, curr);
+		search(calorie, timeLimit, curr, 0);
+		
+		ArrayList<String> result = new ArrayList<String>();
+		
+		for(int i = 0; i < recommended.size(); i ++)
+		{
+			StringBuffer buff = new StringBuffer();
+			for (String s : recommended.get(i).keySet())
+			{
+				buff.append(s + " ");
+				buff.append(recommended.get(i).get(s));
+				buff.append(" ");
+			}
+			
+			/*String s = buff.toString().trim();
+			if (result.indexOf(s) != -1)
+			{
+				result.add(buff.toString().trim());
+			}*/
+			
+			result.add(buff.toString().trim());
+		}
+		
+		if (result.size() == 0)
+			result.add("no proper plan can be found");
+		
+		return result;
+	}
+	
+	private void search(int c, int t, Hashtable<String, Integer> curr, int start)
+	{
+		/*if (c <= 0)
+		{
+			recommended.add(curr);
+			return;
+		}
+		if (t <= 0)
+		{
+			return;
+		}
+		
+		for (int i = 0; i < acts.size(); i ++)
+		{
+			Hashtable<String, Integer> next = new Hashtable<String, Integer>(curr);
+			if (curr.containsKey(acts.get(i).ActName))
+			{
+				next.put(acts.get(i).ActName, next.get(acts.get(i).ActName) + 1);
+			}
+			else
+			{
+				next.put(acts.get(i).ActName, 1);
+			}
+			
+			search(c - Integer.parseInt(acts.get(i).ActCal), t - 1, next);
+		}*/
+		
+		if (c <= 0)
+		{
+			System.out.println("c: " + c + " t: " + t);
+			recommended.add(curr);
+			return;
+		}
+		if (t <= 0 || start >= acts.size())
+			return;
+		
+		int d = Integer.parseInt(acts.get(start).ActCal);
+		
+		int i = 0;
+		if (c % d == 0)
+			i = c / d;
+		else
+			i = c / d + 1;
+		
+		if(i > t)
+			i = t;
+		
+		for (; i >= 1; i --)
+		{
+			if (i == 0)
+			{
+				search(c, t, curr, start + 1);
+			}
+			Hashtable<String, Integer> next = new Hashtable<String, Integer>(curr);
+			next.put(acts.get(start).ActName, i);
+			search(c - d * i, t - i, next, start + 1);
+		}
+		
+	}
+}
