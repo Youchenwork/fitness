@@ -1,0 +1,44 @@
+package com.example.fitness.analysis;
+
+import java.util.Iterator;
+import java.util.List;
+
+import android.content.Context;
+
+public class NutritionTotal {
+	
+	private Context context;
+	
+	double calorie;
+	double protein;
+	double carbohydrate;
+	String[] result;
+	
+	AnalysisHelper helper = new AnalysisHelper(this.context);
+	
+	NutritionTotal(Context Context){
+		
+		context = Context;
+		
+		calorie = 0;
+		protein = 0;
+		carbohydrate = 0;		
+	}
+	
+	NutritionTotal(int Idf){
+		List<EntityNutritionRecord> h= helper.getMultidayNutritionHistory(Idf);
+		Iterator it = h.iterator();		
+		
+		while(it.hasNext()){
+			EntityNutritionRecord tmp = (EntityNutritionRecord) it.next();
+			
+			
+			
+		}
+		
+	}
+	
+	public String[] getResult(){
+		return result;
+	}
+}
