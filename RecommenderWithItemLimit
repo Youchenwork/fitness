@@ -1,0 +1,32 @@
+package recomm;
+
+import java.util.ArrayList;
+
+public class RecommenderWithItemLimit extends RecommenderDecorator
+{
+	private int itemLimit;
+	public RecommenderWithItemLimit(Recommender rec, int limit)
+	{
+		super(rec);
+		itemLimit = limit;
+	}
+	
+	@Override
+	public ArrayList<String> recommend()
+	{
+		java.util.ArrayList<String> r = decoratee.recommend();
+		
+		if (itemLimit <= 0)
+		{
+			System.out.println("Item limit is 0.");
+			return r;
+		}
+		//remove elements whose indexes are larger than itemLimit
+		for(int i = r.size() - 1; i >= itemLimit; i --)
+		{
+			r.remove(i);
+		}
+		System.out.println("the result size is: " + r.size());
+		return r;
+	}
+}
