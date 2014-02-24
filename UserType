@@ -1,0 +1,32 @@
+package dbModel;
+
+import android.database.Cursor;
+
+public class UserType {
+	public String Type;
+	public String Sex;
+	public String AgeTop;
+	public String AgeBottom;
+	public String CalFactor;
+	public String CalConstant;
+	public String Carbohydrate;
+	public String Protein;
+	
+	public UserType(){
+		
+	}
+	
+	public UserType(Cursor cursor){
+		
+		this.Type = cursor.getString(cursor.getColumnIndex("Type"));
+		this.Sex = cursor.getString(cursor.getColumnIndex("Sex"));	
+		this.AgeTop = cursor.getString(cursor.getColumnIndex("AgeTop"));	
+		this.AgeBottom = cursor.getString(cursor.getColumnIndex("AgeBottom"));	
+		this.CalFactor = cursor.getString(cursor.getColumnIndex("CalFactor"));	
+		this.CalConstant = cursor.getString(cursor.getColumnIndex("CalConstant"));	
+		this.Carbohydrate = cursor.getString(cursor.getColumnIndex("Carbohydrate"));	
+		this.Protein = cursor.getString(cursor.getColumnIndex("Protein"));	
+
+	}
+	
+}
