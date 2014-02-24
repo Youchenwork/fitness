@@ -1,0 +1,121 @@
+package com.example.fitness;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
+
+public class NutritionAnalysis extends Activity implements OnClickListener{
+	TextView nutrition_analysis_text;
+	//TextView na_text;
+	Button menu_btn1;
+    Button menu_btn2;
+	Button get_report_btn;
+	RadioGroup report_radioGroup;
+	RadioGroup period_radioGroup;
+	String report_type;
+	String period;
+	Intent nextActivity;
+	
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	        setContentView(R.layout.nutrition_analysis);
+	        
+			menu_btn1 = (Button)findViewById(R.id.menu_btn1);
+			menu_btn2 = (Button)findViewById(R.id.menu_btn2);
+			get_report_btn = (Button)findViewById(R.id.get_report_btn);
+			menu_btn1.setOnClickListener(this);
+			menu_btn2.setOnClickListener(this);
+			get_report_btn.setOnClickListener(this);
+			menu_btn1.setText("Calorie Calculator");
+			menu_btn2.setText("Personal Record");
+			//menu_btn3.setText("Health Chart");
+			report_radioGroup = (RadioGroup)findViewById(R.id.report_radioGroup);
+			period_radioGroup = (RadioGroup)findViewById(R.id.period_radioGroup);
+	        
+//	        na_text = (TextView)findViewById(R.id.na_text);
+//	        na_text.setText("This is a simple TextView, you can replace the string here with your formatted report.\n" +
+//	        "Let me know if you need anything else");
+	        nutrition_analysis_text = (TextView)findViewById(R.id.nutrition_analysis_text);
+	        report_radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() 
+	        {
+	            public void onCheckedChanged(RadioGroup group, int checkedId) {
+	                // checkedId is the RadioButton selected
+	            	//change text and background color on click
+	            	switch(checkedId){
+	            	case R.id.report1:
+	            		report_type = "Calorie Report";
+//	        	        na_text.setText("Report 1 is generated on click");
+//	        	        na_text.setBackgroundColor(Color.parseColor("#CCFFCC"));
+	                	break;
+	                case R.id.report2:
+	                	report_type = "Protein Report";
+//	        	        na_text.setText("Report 2 is generated on click");
+//	        	        na_text.setBackgroundColor(Color.parseColor("#FFDEFF"));
+	                	break;
+	                case R.id.report3:
+	                	report_type = "Carbohydrate Report";
+//	        	        na_text.setText("Report 3 is generated on click");
+//	        	        na_text.setBackgroundColor(Color.parseColor("#FFFFCC"));
+	                	break;
+	            	}
+	            }
+	        });
+	        
+	        period_radioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() 
+	        {
+	            public void onCheckedChanged(RadioGroup group, int checkedId) {
+	                // checkedId is the RadioButton selected
+	            	//change text and background color on click
+	            	switch(checkedId){
+	            	case R.id.period1:
+	            		period = "for past 1 day";
+//	        	        na_text.setText("Report 1 is generated on click");
+//	        	        na_text.setBackgroundColor(Color.parseColor("#CCFFCC"));
+	                	break;
+	                case R.id.period2:
+	                	period = "for past 1 week";
+//	        	        na_text.setText("Report 2 is generated on click");
+//	        	        na_text.setBackgroundColor(Color.parseColor("#FFDEFF"));
+	                	break;
+	                case R.id.period3:
+	                	period = "for past 1 month";
+//	        	        na_text.setText("Report 3 is generated on click");
+//	        	        na_text.setBackgroundColor(Color.parseColor("#FFFFCC"));
+	                	break;
+	            	}
+	            }
+	        });
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+        case R.id.menu_btn1:
+        	nextActivity = new Intent(NutritionAnalysis.this, CalcTab.class);
+        	startActivity(nextActivity);
+            break;
+        case R.id.menu_btn2:
+        	nextActivity = new Intent(NutritionAnalysis.this, PersonalRecord_CalendarView.class);
+        	startActivity(nextActivity); 
+            break;
+        case R.id.get_report_btn:
+        	nextActivity = new Intent(NutritionAnalysis.this, AnalysisReportActivity.class);
+        	nextActivity.putExtra("Report Type", report_type);
+        	nextActivity.putExtra("Period", period);
+    		startActivityForResult(nextActivity, 1);
+            break; 
+        default:
+            break;
+        }
+		
+	}
+
+}
