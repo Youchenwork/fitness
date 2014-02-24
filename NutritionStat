@@ -1,0 +1,88 @@
+package com.example.fitness.analysis;
+
+
+import java.util.Iterator;
+import java.util.List;
+
+import android.content.Context;
+
+public class NutritionStat {
+	
+	private Context context;
+	AnalysisHelper helper = new AnalysisHelper(this.context);
+	
+	
+	//stats
+	public double avgCal;
+	public double maxCal;
+	public String maxCalDate;
+	public double minCal;
+	public String minCalDate;
+	public double avgPrt;
+	public double maxPrt;
+	public String maxPrtDate;
+	public double minPrt;
+	public String minPrtDate;	
+	public double avgCht;
+	public double maxCht;
+	public String maxChtDate;
+	public double minCht;
+	public String minChtDate;
+	
+	private void calcStat(List<EntityNutritionRecord> h){
+		Iterator it = h.iterator();
+		int n = 1;
+		
+		//initial
+		if (it.hasNext()){
+			EntityNutritionRecord start = (EntityNutritionRecord) it.next();
+			avgCal =minCal = maxCal = start.dailyTotalCal;
+			avgPrt =minPrt = maxPrt = start.dailyTotalPrt;
+			avgCht =minCht = maxCht = start.dailyTotalCht;
+			maxCalDate = minCalDate = maxPrtDate = minPrtDate = maxChtDate = minChtDate = start.date;
+		}
+		
+		//loop data
+		while(it.hasNext()){
+			
+			EntityNutritionRecord tmp = (EntityNutritionRecord) it.next();
+			avgCal = ((avgCal*n)+tmp.dailyTotalCal)/(n+1);
+			avgPrt = ((avgCal*n)+tmp.dailyTotalPrt)/(n+1);
+			avgCht = ((avgCal*n)+tmp.dailyTotalCht)/(n+1);
+			
+			if(tmp.dailyTotalCal > maxCal) {
+				maxCal = tmp.dailyTotalCal;
+				maxCalDate = tmp.date;
+			} else if(tmp.dailyTotalCal < minCal) {
+				minCal = tmp.dailyTotalCal;
+				minCalDate = tmp.date;
+			}
+			
+			if(tmp.dailyTotalPrt > maxPrt) {
+				maxPrt = tmp.dailyTotalPrt;
+				maxPrtDate = tmp.date;
+			} else if(tmp.dailyTotalPrt < minPrt) {
+				minPrt = tmp.dailyTotalPrt;
+				minPrtDate = tmp.date;
+			}
+			
+			if(tmp.dailyTotalCht > maxCht) {
+				maxCht = tmp.dailyTotalCht;
+				maxChtDate = tmp.date;
+			} else if(tmp.dailyTotalCht < minCht) {
+				minCht = tmp.dailyTotalCht;
+				minChtDate = tmp.date;
+			}
+			
+			n = n+1;
+		}
+	}
+	
+	public NutritionStat(Context Context,int Idf){
+
+		context = Context;
+
+//		String startDate = helper.getStartDate(Idf);
+		calcStat(helper.getMultidayNutritionHistory(Idf));
+	}
+}
